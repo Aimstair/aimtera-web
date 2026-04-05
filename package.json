@@ -7,10 +7,16 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit && tsc -p tsconfig.node.json --noEmit",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:smoke": "playwright test -g @smoke",
+    "smoke:prod": "node ./scripts/smoke-check.mjs",
+    "perf:budget": "node ./scripts/check-bundle-budget.mjs",
+    "quality:ci": "npm run lint && npm run typecheck && npm run test && npm run build && npm run perf:budget"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
@@ -43,6 +49,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@react-three/drei": "^9",
     "@react-three/fiber": "^8",
+    "@supabase/supabase-js": "^2.49.4",
     "@tanstack/react-query": "^5.83.0",
     "@types/three": "^0.170",
     "class-variance-authority": "^0.7.1",

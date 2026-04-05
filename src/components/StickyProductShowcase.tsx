@@ -206,7 +206,7 @@ const StickyProductShowcase = () => {
                 </MagneticButton>
               </div>
 
-              <div className="flex justify-center">
+              <div className="flex justify-center relative">
                 <img
                   key={product.name}
                   src={product.image}
@@ -214,6 +214,9 @@ const StickyProductShowcase = () => {
                   className={product.imageClass}
                   style={{ animation: "fadeScaleIn 0.6s ease-out" }}
                 />
+                {product.name === "SymmetryAI" && (
+                    <div className="absolute left-1/2 -translate-x-1/2 w-[300px] h-1 z-20 animate-scan scan-line" style={{ filter: "blur(2px)" }} />
+                )}
               </div>
             </div>
 

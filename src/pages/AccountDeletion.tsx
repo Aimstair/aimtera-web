@@ -1,18 +1,110 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import MagneticButton from "@/components/MagneticButton";
 import PageTransition from "@/components/PageTransition";
+import TurnstileWidget from "@/components/TurnstileWidget";
+import {
+  confirmAccountDeletionRequest,
+  submitAccountDeletionRequest,
+} from "@/lib/backendApi";
+
+const serviceOptions = ["RBMarket", "Lume", "SymmetryAI", "All Services"] as const;
 
 const AccountDeletion = () => {
+  const [searchParams] = useSearchParams();
+  const handledVerificationTokenRef = useRef<string | null>(null);
   const [email, setEmail] = useState("");
+  const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [reason, setReason] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(false);
+  const [submissionState, setSubmissionState] = useState<"idle" | "submitting" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [verificationState, setVerificationState] = useState<
+    "idle" | "verifying" | "verified" | "failed"
+  >("idle");
+  const [verificationMessage, setVerificationMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    const verifyToken = (searchParams.get("verify") || "").trim();
+    if (!verifyToken || handledVerificationTokenRef.current === verifyToken) {
+      return;
+    }
+
+    handledVerificationTokenRef.current = verifyToken;
+    setVerificationState("verifying");
+    setVerificationMessage("Verifying your account deletion request...");
+
+    void confirmAccountDeletionRequest(verifyToken)
+      .then((response) => {
+        setVerificationState("verified");
+        setVerificationMessage(response.message);
+      })
+      .catch((error) => {
+        setVerificationState("failed");
+        setVerificationMessage(
+          error instanceof Error
+            ? error.message
+            : "Could not verify your request. Please submit a new one.",
+        );
+      });
+  }, [searchParams]);
+
+  const toggleService = (service: string) => {
+    setErrorMessage("");
+    if (submissionState === "error") {
+      setSubmissionState("idle");
+    }
+
+    setSelectedServices((previous) => {
+      if (service === "All Services") {
+        return previous.includes("All Services") ? [] : ["All Services"];
+      }
+
+      const withoutAll = previous.filter((item) => item !== "All Services");
+      if (withoutAll.includes(service)) {
+        return withoutAll.filter((item) => item !== service);
+      }
+
+      return [...withoutAll, service];
+    });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
+
+    if (!email.trim()) return;
+
+    if (selectedServices.length === 0) {
+      setErrorMessage("Select at least one service.");
+      setSubmissionState("error");
+      return;
+    }
+
+    if (!captchaToken) {
+      setErrorMessage("Please complete the challenge.");
+      setSubmissionState("error");
+      return;
+    }
+
+    setSubmissionState("submitting");
+    setErrorMessage("");
+
+    try {
+      await submitAccountDeletionRequest({
+        email,
+        services: selectedServices,
+        reason: reason.trim() || null,
+        captchaToken,
+      });
       setSubmitted(true);
+    } catch (error) {
+      setSubmissionState("error");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Something went wrong. Please try again.",
+      );
     }
   };
 
@@ -25,6 +117,22 @@ const AccountDeletion = () => {
             <ScrollReveal>
               <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "hsl(var(--corp-dark-foreground))" }}>Account Deletion Request</h1>
               <p className="text-sm mb-12" style={{ color: "hsl(var(--corp-dark-muted))" }}>We're sorry to see you go. Submit a request below and we'll process your account deletion within 30 days.</p>
+
+              {verificationState !== "idle" && (
+                <div
+                  className={`mb-6 rounded-lg border px-4 py-3 text-sm ${verificationState === "failed" ? "text-destructive" : "text-emerald-300"}`}
+                  style={{
+                    background: "hsl(var(--corp-dark-elevated))",
+                    borderColor:
+                      verificationState === "failed"
+                        ? "hsl(var(--destructive) / 0.4)"
+                        : "hsl(160 60% 45% / 0.35)",
+                  }}
+                  aria-live="polite"
+                >
+                  {verificationMessage}
+                </div>
+              )}
             </ScrollReveal>
 
             <ScrollReveal delay={100}>
@@ -52,7 +160,7 @@ const AccountDeletion = () => {
                 <div className="rounded-2xl p-8 text-center border" style={{ background: "hsl(var(--corp-dark-elevated))", borderColor: "hsl(var(--rbmarket-accent) / 0.2)" }}>
                   <div className="text-4xl mb-4">✓</div>
                   <h3 className="text-xl font-bold mb-2" style={{ color: "hsl(var(--corp-dark-foreground))" }}>Request Submitted</h3>
-                  <p style={{ color: "hsl(var(--corp-dark-muted))" }}>We've received your account deletion request. You will receive a confirmation email within 48 hours, and your data will be permanently deleted within 30 days.</p>
+                  <p style={{ color: "hsl(var(--corp-dark-muted))" }}>We've received your account deletion request. Please check your inbox and click the verification link to continue processing.</p>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -75,9 +183,14 @@ const AccountDeletion = () => {
                   <div>
                     <label className="block text-sm font-medium mb-2" style={{ color: "hsl(var(--corp-dark-foreground))" }}>Which service(s)?</label>
                     <div className="flex flex-wrap gap-3">
-                      {["RBMarket", "Lume", "SymmetryAI", "All Services"].map((service) => (
+                      {serviceOptions.map((service) => (
                         <label key={service} className="flex items-center gap-2 text-sm cursor-pointer" style={{ color: "hsl(var(--corp-dark-muted))" }}>
-                          <input type="checkbox" className="rounded" />
+                          <input
+                            type="checkbox"
+                            className="rounded"
+                            checked={selectedServices.includes(service)}
+                            onChange={() => toggleService(service)}
+                          />
                           {service}
                         </label>
                       ))}
@@ -98,15 +211,23 @@ const AccountDeletion = () => {
                       }}
                     />
                   </div>
+                  {submissionState === "error" && (
+                    <p className="text-sm text-destructive">{errorMessage}</p>
+                  )}
+                  <TurnstileWidget
+                    action="account_deletion_submit"
+                    onTokenChange={setCaptchaToken}
+                  />
                   <MagneticButton
                     as="button"
+                    disabled={submissionState === "submitting" || !captchaToken}
                     className="px-8 py-3 rounded-full font-semibold text-sm transition-opacity hover:opacity-90"
                     style={{
                       background: "hsl(var(--destructive))",
                       color: "hsl(var(--destructive-foreground))",
                     }}
                   >
-                    Submit Deletion Request
+                    {submissionState === "submitting" ? "Submitting..." : "Submit Deletion Request"}
                   </MagneticButton>
                 </form>
               )}

@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowRight, Bluetooth, Layers, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import ScrollReveal from "@/components/ScrollReveal";
 import MagneticButton from "@/components/MagneticButton";
 import StickyWaitlistBar from "@/components/StickyWaitlistBar";
+import TurnstileWidget from "@/components/TurnstileWidget";
 import PageTransition from "@/components/PageTransition";
 import heroBg from "@/assets/hero-lume.jpg";
 import phoneMockup from "@/assets/lume-phone-mockup.png";
@@ -12,31 +13,162 @@ import proximityImg from "@/assets/lume-proximity.png";
 import echoDeckImg from "@/assets/lume-echo-deck.png";
 import mapImg from "@/assets/lume-map.png";
 import proximitySpark from "@/assets/lume-proximity-spark.png";
+import { getWaitlistCount, submitWaitlist } from "@/lib/backendApi";
 
-const WaitlistForm = ({ className = "" }: { className?: string }) => {
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+interface WaitlistFormProps {
+  className?: string;
+  isSignedUp: boolean;
+  onSignedUp: () => void;
+}
+
+const WaitlistForm = ({ className = "", isSignedUp, onSignedUp }: WaitlistFormProps) => {
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const [submissionState, setSubmissionState] = useState<"idle" | "submitting" | "error">("idle");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) { setSubmitted(true); setEmail(""); }
+
+    if (isSignedUp) return;
+
+    const trimmedEmail = email.trim();
+    if (!trimmedEmail) return;
+
+    if (!EMAIL_REGEX.test(trimmedEmail)) {
+      setSubmissionState("error");
+      setErrorMessage("Please enter a valid email address.");
+      return;
+    }
+
+    if (!captchaToken) {
+      setSubmissionState("error");
+      setErrorMessage("Please complete the challenge.");
+      return;
+    }
+
+    setSubmissionState("submitting");
+    setErrorMessage("");
+
+    try {
+      const result = await submitWaitlist({
+        product: "lume",
+        email: trimmedEmail,
+        captchaToken,
+      });
+
+      if (result.duplicate) {
+        setSubmissionState("error");
+        setErrorMessage("This email is already on the waitlist.");
+        return;
+      }
+
+      setEmail("");
+      setCaptchaToken(null);
+      setSubmissionState("idle");
+      onSignedUp();
+    } catch (error) {
+      setSubmissionState("error");
+      setErrorMessage(
+        error instanceof Error ? error.message : "Something went wrong. Please try again.",
+      );
+    }
   };
 
-  if (submitted) {
+  if (isSignedUp) {
     return <div className={className}><p className="text-lume-amber font-semibold">🎉 You're on the list! We'll be in touch.</p></div>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`flex flex-col sm:flex-row gap-3 ${className}`}>
-      <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Enter your email" className="flex-1 bg-lume-bg-elevated border border-lume-amber/20 rounded-full px-6 py-3.5 text-lume-foreground placeholder:text-lume-foreground/30 focus:outline-none focus:border-lume-amber/50 transition-colors" />
-      <MagneticButton as="button" className="bg-gradient-to-r from-lume-amber to-lume-magenta text-primary-foreground font-semibold px-8 py-3.5 rounded-full hover:opacity-90 transition-opacity flex items-center justify-center gap-2 whitespace-nowrap">
-        Join Waitlist <ArrowRight className="w-4 h-4" />
-      </MagneticButton>
+    <form onSubmit={handleSubmit} className={`space-y-2 ${className}`}>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <input
+          type="email"
+          required
+          value={email}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (submissionState === "error") {
+              setSubmissionState("idle");
+              setErrorMessage("");
+            }
+          }}
+          placeholder="Enter your email"
+          disabled={submissionState === "submitting"}
+          className="flex-1 bg-lume-bg-elevated border border-lume-amber/20 rounded-full px-6 py-3.5 text-lume-foreground placeholder:text-lume-foreground/30 focus:outline-none focus:border-lume-amber/50 transition-colors"
+        />
+        <MagneticButton
+          as="button"
+          disabled={submissionState === "submitting" || !captchaToken}
+          className="bg-gradient-to-r from-lume-amber to-lume-magenta text-primary-foreground font-semibold px-8 py-3.5 rounded-full hover:opacity-90 transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+        >
+          {submissionState === "submitting" ? "Joining..." : "Join Waitlist"} <ArrowRight className="w-4 h-4" />
+        </MagneticButton>
+      </div>
+      <TurnstileWidget
+        action="waitlist_submit"
+        onTokenChange={setCaptchaToken}
+      />
+      <p
+        aria-live="polite"
+        className={`text-sm min-h-5 break-words ${submissionState === "error" ? "text-destructive" : "text-transparent"}`}
+      >
+        {submissionState === "error" ? errorMessage : ""}
+      </p>
     </form>
   );
 };
 
 const Lume = () => {
+  const [isWaitlistSignedUp, setIsWaitlistSignedUp] = useState(false);
+  const [waitlistCount, setWaitlistCount] = useState<number | null>(null);
+  const [isCountLoading, setIsCountLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchWaitlistCount = async () => {
+      setIsCountLoading(true);
+      try {
+        const result = await getWaitlistCount("lume");
+        if (isMounted) {
+          setWaitlistCount(result.count);
+        }
+      } catch {
+        if (isMounted) {
+          setWaitlistCount(null);
+        }
+      } finally {
+        if (isMounted) {
+          setIsCountLoading(false);
+        }
+      }
+    };
+
+    fetchWaitlistCount();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleWaitlistSignedUp = () => {
+    setIsWaitlistSignedUp((previous) => {
+      if (!previous) {
+        setWaitlistCount((current) => (typeof current === "number" ? current + 1 : current));
+      }
+      return true;
+    });
+  };
+
+  const waitlistCountText = isCountLoading
+    ? "Loading live waitlist count..."
+    : typeof waitlistCount === "number"
+      ? `${waitlistCount.toLocaleString()} ${waitlistCount === 1 ? "person" : "people"} currently on the waitlist.`
+      : "Live waitlist count is temporarily unavailable.";
+
   const features = [
     { icon: Bluetooth, title: "Pass It On", subtitle: "Proximity Technology", description: "Messages seamlessly hop between devices using Bluetooth as users walk past one another. No internet needed — just proximity and serendipity.", image: proximityImg, imgAlt: "Two phones connecting via Bluetooth proximity" },
     { icon: Layers, title: "The Echo Deck", subtitle: "Beautiful Message Cards", description: "Every message is a beautifully crafted card, designed to be screenshotted and shared on Instagram Stories. Express yourself with style.", image: echoDeckImg, imgAlt: "Swipeable gradient message cards" },
@@ -47,7 +179,11 @@ const Lume = () => {
     <PageTransition>
       <div className="min-h-screen bg-lume-bg">
         <Navbar />
-        <StickyWaitlistBar product="lume" />
+        <StickyWaitlistBar
+          product="lume"
+          isSignedUp={isWaitlistSignedUp}
+          onSignedUp={handleWaitlistSignedUp}
+        />
 
         {/* Hero */}
         <section className="relative pt-16 overflow-hidden">
@@ -69,7 +205,16 @@ const Lume = () => {
                     A new social experience where your messages are passed to the people you cross paths with every day. Join the exclusive beta.
                   </p>
                 </ScrollReveal>
-                <ScrollReveal delay={200}><WaitlistForm className="max-w-lg" /></ScrollReveal>
+                <ScrollReveal delay={200}>
+                  <WaitlistForm
+                    className="max-w-lg"
+                    isSignedUp={isWaitlistSignedUp}
+                    onSignedUp={handleWaitlistSignedUp}
+                  />
+                  <p className="max-w-lg mt-2 text-xs text-lume-foreground/50" aria-live="polite">
+                    {waitlistCountText}
+                  </p>
+                </ScrollReveal>
               </div>
               <ScrollReveal delay={300} direction="right">
                 <div className="hidden lg:flex justify-center relative">
@@ -132,7 +277,11 @@ const Lume = () => {
             <ScrollReveal>
               <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground mb-4">Ready to Light Up?</h2>
               <p className="text-lume-foreground/50 mb-10 max-w-md mx-auto">Be among the first to experience Lume. Join our exclusive beta waitlist.</p>
-              <WaitlistForm className="max-w-lg mx-auto" />
+              <WaitlistForm
+                className="max-w-lg mx-auto"
+                isSignedUp={isWaitlistSignedUp}
+                onSignedUp={handleWaitlistSignedUp}
+              />
             </ScrollReveal>
           </div>
         </section>

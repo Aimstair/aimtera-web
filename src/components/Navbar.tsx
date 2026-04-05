@@ -11,7 +11,7 @@ const Navbar = () => {
   const isSymmetry = location.pathname.startsWith("/symmetryai");
   const isRBMarket = location.pathname.startsWith("/rbmarket");
   const isProductPage = isLume || isSymmetry || isRBMarket;
-  const isLegal = ["/privacy", "/terms", "/account-deletion"].includes(location.pathname);
+  const isLegal = ["/privacy", "/terms", "/account-deletion", "/admin/reports"].includes(location.pathname);
 
   const navClasses = isLume
     ? "bg-lume-bg/90 border-b border-lume-amber/10 backdrop-blur-xl"
