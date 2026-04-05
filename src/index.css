@@ -1,0 +1,197 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 20% 98%;
+    --foreground: 215 25% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 25% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 25% 15%;
+
+    --primary: 213 50% 24%;
+    --primary-foreground: 210 40% 98%;
+
+    --secondary: 210 20% 96%;
+    --secondary-foreground: 215 25% 15%;
+
+    --muted: 210 15% 93%;
+    --muted-foreground: 215 10% 50%;
+
+    --accent: 213 50% 24%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214 20% 90%;
+    --input: 214 20% 90%;
+    --ring: 213 50% 24%;
+
+    --radius: 0.75rem;
+
+    /* Aimtera Corporate */
+    --corporate-blue: 213 50% 24%;
+    --corporate-blue-light: 213 60% 40%;
+    --corporate-slate: 215 15% 45%;
+    --corporate-bg-warm: 40 20% 97%;
+
+    /* Corporate Dark */
+    --corp-dark-bg: 220 20% 7%;
+    --corp-dark-elevated: 220 18% 11%;
+    --corp-dark-surface: 220 16% 15%;
+    --corp-dark-foreground: 0 0% 95%;
+    --corp-dark-muted: 0 0% 55%;
+
+    /* Lume Dark Theme */
+    --lume-bg: 230 50% 6%;
+    --lume-bg-elevated: 230 40% 10%;
+    --lume-foreground: 220 20% 92%;
+    --lume-amber: 38 92% 50%;
+    --lume-magenta: 330 80% 60%;
+    --lume-glow: 38 100% 60%;
+
+    /* SymmetryAI Theme */
+    --symmetry-bg: 220 30% 8%;
+    --symmetry-cyan: 185 80% 55%;
+    --symmetry-purple: 260 70% 60%;
+    --symmetry-neon-green: 145 80% 55%;
+
+    /* RBMarket Theme */
+    --rbmarket-bg: 220 20% 8%;
+    --rbmarket-accent: 145 60% 45%;
+    --rbmarket-blue: 200 80% 55%;
+    --rbmarket-surface: 220 15% 14%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .text-gradient-corporate {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--corporate-blue)) 0%, hsl(var(--corporate-blue-light)) 100%);
+  }
+
+  .text-gradient-lume {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--lume-amber)) 0%, hsl(var(--lume-magenta)) 100%);
+  }
+
+  .text-gradient-symmetry {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--symmetry-cyan)) 0%, hsl(var(--symmetry-purple)) 100%);
+  }
+
+  .text-gradient-rbmarket {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--rbmarket-accent)) 0%, hsl(var(--rbmarket-blue)) 100%);
+  }
+
+  .glow-lume {
+    box-shadow: 0 0 60px -15px hsl(var(--lume-amber) / 0.3), 0 0 120px -30px hsl(var(--lume-magenta) / 0.15);
+  }
+
+  .glow-symmetry {
+    box-shadow: 0 0 60px -15px hsl(var(--symmetry-cyan) / 0.3), 0 0 120px -30px hsl(var(--symmetry-purple) / 0.15);
+  }
+
+  .glow-rbmarket {
+    box-shadow: 0 0 60px -15px hsl(var(--rbmarket-accent) / 0.3), 0 0 120px -30px hsl(var(--rbmarket-blue) / 0.15);
+  }
+
+  .bg-lume-gradient {
+    background: linear-gradient(135deg, hsl(var(--lume-bg)) 0%, hsl(230 45% 8%) 50%, hsl(260 30% 10%) 100%);
+  }
+
+  .bg-symmetry-gradient {
+    background: linear-gradient(135deg, hsl(var(--symmetry-bg)) 0%, hsl(240 25% 10%) 50%, hsl(200 30% 8%) 100%);
+  }
+
+  .bg-rbmarket-gradient {
+    background: linear-gradient(135deg, hsl(var(--rbmarket-bg)) 0%, hsl(160 15% 8%) 50%, hsl(200 20% 6%) 100%);
+  }
+
+  .glassmorphism {
+    background: hsl(0 0% 100% / 0.05);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(0 0% 100% / 0.1);
+  }
+
+  .scan-line {
+    background: linear-gradient(
+      180deg,
+      transparent 0%,
+      hsl(var(--symmetry-cyan) / 0.6) 50%,
+      transparent 100%
+    );
+  }
+}
+
+/* Custom animations */
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeScaleIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes scanDown {
+  0% { top: -10%; }
+  100% { top: 110%; }
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes scroll-x {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes glowPulse {
+  0%, 100% { box-shadow: 0 0 20px hsl(var(--rbmarket-accent) / 0.4), 0 0 60px hsl(var(--rbmarket-accent) / 0.2); }
+  50% { box-shadow: 0 0 30px hsl(var(--rbmarket-accent) / 0.6), 0 0 80px hsl(var(--rbmarket-accent) / 0.3); }
+}
+
+@keyframes spotlightSweep {
+  0% { transform: translateX(-100%) rotate(15deg); }
+  100% { transform: translateX(200%) rotate(15deg); }
+}
