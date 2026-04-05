@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence } from "framer-motion";
-import { Suspense, lazy, useCallback, useEffect, useRef } from "react";
+import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
 import CustomCursor from "@/components/CustomCursor";
 import ChatbotWidget from "./components/ChatbotWidget";
 import { setupGlobalErrorMonitoring } from "@/lib/monitoring";
@@ -301,6 +301,52 @@ const buildBreadcrumbSchema = (metadata: RouteMetadata, canonicalUrl: string) =>
   };
 };
 
+const RouteLoadingFallback = () => {
+  const loadingSteps = [
+    "Preparing your experience",
+    "Optimizing visuals and interactions",
+    "Finalizing route transition",
+  ];
+  const [stepIndex, setStepIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setStepIndex((current) => (current + 1) % loadingSteps.length);
+    }, 1100);
+
+    return () => {
+      window.clearInterval(interval);
+    };
+  }, [loadingSteps.length]);
+
+  return (
+    <div className="min-h-screen w-full flex items-center justify-center px-6" role="status" aria-live="polite">
+      <div className="w-full max-w-sm rounded-2xl border border-border/70 bg-background/95 backdrop-blur-sm p-6 shadow-lg">
+        <div className="flex items-center gap-4">
+          <div className="relative h-12 w-12 shrink-0">
+            <div className="absolute inset-0 rounded-full border-2 border-muted" />
+            <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          </div>
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-foreground">Loading Aimtera Labs</p>
+            <p className="text-xs text-muted-foreground">{loadingSteps[stepIndex]}</p>
+          </div>
+        </div>
+
+        <div className="mt-5 h-1.5 rounded-full bg-muted overflow-hidden">
+          <div className="h-full w-1/2 rounded-full bg-primary animate-pulse" />
+        </div>
+
+        <div className="mt-4 flex gap-2" aria-hidden="true">
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:120ms]" />
+          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:240ms]" />
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const AnimatedRoutes = () => {
   const location = useLocation();
   const scrollPositionsRef = useRef<Record<string, number>>({});
@@ -400,13 +446,7 @@ const AnimatedRoutes = () => {
 
   return (
     <AnimatePresence mode="wait" onExitComplete={restorePendingScrollPosition}>
-      <Suspense
-        fallback={
-          <div className="min-h-screen w-full flex items-center justify-center text-sm text-muted-foreground">
-            Loading...
-          </div>
-        }
-      >
+      <Suspense fallback={<RouteLoadingFallback />}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Index />} />
           <Route path="/lume" element={<Lume />} />
