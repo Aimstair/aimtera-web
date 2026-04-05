@@ -21,28 +21,5 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     chunkSizeWarningLimit: 650,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            return undefined;
-          }
-
-          if (id.includes("react") || id.includes("scheduler")) {
-            return "react-vendor";
-          }
-
-          if (id.includes("@radix-ui") || id.includes("lucide-react") || id.includes("class-variance-authority")) {
-            return "ui-vendor";
-          }
-
-          if (id.includes("framer-motion") || id.includes("three") || id.includes("@react-three")) {
-            return "animation-vendor";
-          }
-
-          return "vendor";
-        },
-      },
-    },
   },
 }));
