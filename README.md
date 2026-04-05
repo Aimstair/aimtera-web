@@ -222,3 +222,5 @@ Expected legacy columns:
 3. Audit records are written for sensitive deletion and admin lifecycle actions.
 4. Route metadata is updated client-side for title/description/canonical/OG tags.
 5. Chat assistant is local, deterministic, and limited to product/support guidance.
+
+fix
