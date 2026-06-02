@@ -10,7 +10,8 @@ const Navbar = () => {
   const isLume = location.pathname.startsWith("/lume");
   const isSymmetry = location.pathname.startsWith("/symmetryai");
   const isRBMarket = location.pathname.startsWith("/rbmarket");
-  const isProductPage = isLume || isSymmetry || isRBMarket;
+  const isSpeedMath = location.pathname.startsWith("/speedmath");
+  const isProductPage = isLume || isSymmetry || isRBMarket || isSpeedMath;
   const isLegal = ["/privacy", "/terms", "/account-deletion", "/admin/reports"].includes(location.pathname);
 
   const navClasses = isLume
@@ -19,6 +20,8 @@ const Navbar = () => {
     ? "bg-symmetry-bg/90 border-b border-symmetry-cyan/10 backdrop-blur-xl"
     : isRBMarket
     ? "bg-rbmarket-bg/90 border-b border-rbmarket-accent/10 backdrop-blur-xl"
+    : isSpeedMath
+    ? "bg-[hsl(240_10%_4%)]/90 border-b border-[hsl(15_90%_55%)]/10 backdrop-blur-xl"
     : "bg-[hsl(220_20%_7%_/_0.9)] border-b border-[hsl(0_0%_100%_/_0.06)] backdrop-blur-xl";
 
   const linkClasses = isLume
@@ -27,6 +30,8 @@ const Navbar = () => {
     ? "text-lume-foreground/70 hover:text-symmetry-cyan transition-colors"
     : isRBMarket
     ? "text-lume-foreground/70 hover:text-rbmarket-accent transition-colors"
+    : isSpeedMath
+    ? "text-white/70 hover:text-[hsl(15_90%_55%)] transition-colors"
     : "text-[hsl(0_0%_55%)] hover:text-[hsl(0_0%_95%)] transition-colors";
 
   return (
@@ -46,6 +51,8 @@ const Navbar = () => {
               <span className="text-gradient-symmetry">SymmetryAI</span>
             ) : isRBMarket ? (
               <span className="text-gradient-rbmarket">RBMarket</span>
+            ) : isSpeedMath ? (
+              <span className="text-gradient-speedmath">Speed Math</span>
             ) : (
               <span className="text-gradient-corporate">Aimtera Labs</span>
             )}
@@ -70,6 +77,13 @@ const Navbar = () => {
                           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "hsl(var(--rbmarket-accent) / 0.2)", color: "hsl(var(--rbmarket-accent))" }}>LIVE</span>
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: "hsl(0 0% 50%)" }}>P2P game marketplace</p>
+                      </Link>
+                      <Link to="/speedmath" className="block px-4 py-2.5 hover:bg-[hsl(0_0%_100%_/_0.05)] transition-colors text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-gradient-speedmath font-semibold">Speed Math</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "hsl(var(--speedmath-accent) / 0.2)", color: "hsl(var(--speedmath-accent))" }}>NEW</span>
+                        </div>
+                        <p className="text-xs mt-0.5" style={{ color: "hsl(0 0% 50%)" }}>Lightning fast math</p>
                       </Link>
                       <Link to="/lume" className="block px-4 py-2.5 hover:bg-[hsl(0_0%_100%_/_0.05)] transition-colors text-sm">
                         <div className="flex items-center gap-2">
@@ -133,6 +147,7 @@ const Navbar = () => {
           isLume ? 'border-lume-amber/10 bg-lume-bg' :
           isSymmetry ? 'border-symmetry-cyan/10 bg-symmetry-bg' :
           isRBMarket ? 'border-rbmarket-accent/10 bg-rbmarket-bg' :
+          isSpeedMath ? 'border-[hsl(15_90%_55%)]/10 bg-[hsl(240_10%_4%)]' :
           'border-[hsl(0_0%_100%_/_0.06)]'
         }`} style={!isProductPage ? { background: "hsl(220 20% 7%)" } : undefined}>
           {!isProductPage && !isLegal && (
@@ -140,6 +155,7 @@ const Navbar = () => {
               <a href="#about" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>About</a>
               <a href="#team" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Team</a>
               <Link to="/rbmarket" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>RBMarket <span className="text-xs text-rbmarket-accent">LIVE</span></Link>
+              <Link to="/speedmath" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Speed Math <span className="text-xs text-[hsl(15_90%_55%)]">NEW</span></Link>
               <Link to="/lume" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Lume <span className="text-xs text-lume-amber">BETA</span></Link>
               <Link to="/symmetryai" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>SymmetryAI <span className="text-xs text-symmetry-cyan">BETA</span></Link>
               <a href="#contact" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Contact</a>

@@ -19,6 +19,8 @@ const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
 const TermsOfService = lazy(() => import("./pages/TermsOfService.tsx"));
 const AccountDeletion = lazy(() => import("./pages/AccountDeletion.tsx"));
 const AdminReports = lazy(() => import("./pages/AdminReports.tsx"));
+const SpeedMath = lazy(() => import("./pages/SpeedMath.tsx"));
+const SpeedMathPrivacy = lazy(() => import("./pages/SpeedMathPrivacy.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 interface RouteMetadata {
@@ -127,6 +129,48 @@ const routeMetadata: Record<string, RouteMetadata> = {
       url: `${SEO_SITE_URL}/symmetryai`,
       description: "SymmetryAI provides AI-guided muscle balance and training insights.",
       image: `${SEO_SITE_URL}/og-symmetryai.png`,
+      publisher: {
+        "@type": "Organization",
+        name: "Aimtera Labs",
+        url: SEO_SITE_URL,
+      },
+    },
+  },
+  "/speedmath": {
+    title: "Speed Math | Aimtera Labs",
+    description: "Master math at lightning speed with Speed Math.",
+    canonicalPath: "/speedmath",
+    pageName: "Speed Math",
+    ogType: "website",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary_large_image",
+    schema: {
+      "@type": "SoftwareApplication",
+      name: "Speed Math",
+      applicationCategory: "GameApplication",
+      operatingSystem: "Web",
+      url: `${SEO_SITE_URL}/speedmath`,
+      description: "Master math at lightning speed with Speed Math.",
+      publisher: {
+        "@type": "Organization",
+        name: "Aimtera Labs",
+        url: SEO_SITE_URL,
+      },
+    },
+  },
+  "/speedmath/privacy": {
+    title: "Speed Math Privacy Policy | Aimtera Labs",
+    description: "Privacy policy for the Speed Math app.",
+    canonicalPath: "/speedmath/privacy",
+    pageName: "Speed Math Privacy Policy",
+    ogType: "article",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary",
+    schema: {
+      "@type": "CreativeWork",
+      name: "Speed Math Privacy Policy",
+      url: `${SEO_SITE_URL}/speedmath/privacy`,
+      description: "Privacy policy for the Speed Math app.",
       publisher: {
         "@type": "Organization",
         name: "Aimtera Labs",
@@ -452,6 +496,8 @@ const AnimatedRoutes = () => {
           <Route path="/lume" element={<Lume />} />
           <Route path="/symmetryai" element={<SymmetryAI />} />
           <Route path="/rbmarket" element={<RBMarket />} />
+          <Route path="/speedmath" element={<SpeedMath />} />
+          <Route path="/speedmath/privacy" element={<SpeedMathPrivacy />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/account-deletion" element={<AccountDeletion />} />

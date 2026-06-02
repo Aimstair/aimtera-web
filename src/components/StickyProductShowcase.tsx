@@ -5,6 +5,7 @@ import MagneticButton from "./MagneticButton";
 import lumeMockup from "@/assets/lume-phone-mockup.png";
 import symmetryMockup from "@/assets/symmetry-hero-phone.png";
 import rbmarketMockup from "@/assets/rbmarket-hero-laptop.png";
+import speedmathMockup from "@/assets/speedmath-mockup.png";
 
 interface Product {
   name: string;
@@ -67,6 +68,20 @@ const products: Product[] = [
     imageClass: "w-60 md:w-68 drop-shadow-2xl",
     status: "development",
     ctaLabel: "Join Waitlist",
+  },
+  {
+    name: "Speed Math",
+    tagline: "Master math at lightning speed.",
+    description: "Test your reflexes and sharpen your mind with our custom-built, responsive on-screen Numpad. Track your performance and beat the clock.",
+    link: "/speedmath",
+    gradient: "from-[hsl(240_10%_4%)] via-[hsl(240_10%_8%)] to-[hsl(240_10%_6%)]",
+    accentColor: "hsl(15, 90%, 55%)",
+    textGradient: "text-gradient-speedmath",
+    image: speedmathMockup,
+    imageAlt: "Speed Math game app interface",
+    imageClass: "w-64 md:w-72 drop-shadow-2xl rounded-[2.5rem] glow-speedmath",
+    status: "live",
+    ctaLabel: "Play Now",
   },
 ];
 

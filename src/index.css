@@ -67,6 +67,12 @@
     --rbmarket-blue: 200 80% 55%;
     --rbmarket-surface: 220 15% 14%;
 
+    /* Speed Math Theme */
+    --speedmath-bg: 240 10% 4%;
+    --speedmath-accent: 15 90% 55%;
+    --speedmath-blue: 210 100% 50%;
+    --speedmath-surface: 240 10% 10%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -113,6 +119,11 @@
     background-image: linear-gradient(135deg, hsl(var(--rbmarket-accent)) 0%, hsl(var(--rbmarket-blue)) 100%);
   }
 
+  .text-gradient-speedmath {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--speedmath-accent)) 0%, hsl(var(--speedmath-blue)) 100%);
+  }
+
   .glow-lume {
     box-shadow: 0 0 60px -15px hsl(var(--lume-amber) / 0.3), 0 0 120px -30px hsl(var(--lume-magenta) / 0.15);
   }
@@ -123,6 +134,10 @@
 
   .glow-rbmarket {
     box-shadow: 0 0 60px -15px hsl(var(--rbmarket-accent) / 0.3), 0 0 120px -30px hsl(var(--rbmarket-blue) / 0.15);
+  }
+
+  .glow-speedmath {
+    box-shadow: 0 0 60px -15px hsl(var(--speedmath-accent) / 0.3), 0 0 120px -30px hsl(var(--speedmath-blue) / 0.15);
   }
 
   .bg-lume-gradient {
