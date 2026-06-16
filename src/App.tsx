@@ -21,6 +21,9 @@ const AccountDeletion = lazy(() => import("./pages/AccountDeletion.tsx"));
 const AdminReports = lazy(() => import("./pages/AdminReports.tsx"));
 const SpeedMath = lazy(() => import("./pages/SpeedMath.tsx"));
 const SpeedMathPrivacy = lazy(() => import("./pages/SpeedMathPrivacy.tsx"));
+const Test4Test = lazy(() => import("./pages/Test4Test.tsx"));
+const Test4TestPrivacy = lazy(() => import("./pages/Test4TestPrivacy.tsx"));
+const Test4TestAccountDeletion = lazy(() => import("./pages/Test4TestAccountDeletion.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 interface RouteMetadata {
@@ -177,6 +180,46 @@ const routeMetadata: Record<string, RouteMetadata> = {
         url: SEO_SITE_URL,
       },
     },
+  },
+  "/test4test": {
+    title: "Test4Test | Aimtera Labs",
+    description: "Mutual app testing community for Google Play developers.",
+    canonicalPath: "/test4test",
+    pageName: "Test4Test",
+    ogType: "website",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary_large_image",
+    schema: {
+      "@type": "SoftwareApplication",
+      name: "Test4Test",
+      applicationCategory: "DeveloperApplication",
+      operatingSystem: "Android",
+      url: `${SEO_SITE_URL}/test4test`,
+      description: "Mutual app testing community for Google Play developers.",
+      publisher: {
+        "@type": "Organization",
+        name: "Aimtera Labs",
+        url: SEO_SITE_URL,
+      },
+    },
+  },
+  "/test4test/privacy": {
+    title: "Test4Test Privacy Policy | Aimtera Labs",
+    description: "Privacy policy for the Test4Test mutual app testing service.",
+    canonicalPath: "/test4test/privacy",
+    pageName: "Test4Test Privacy Policy",
+    ogType: "article",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary",
+  },
+  "/test4test/account-deletion": {
+    title: "Test4Test Account Deletion | Aimtera Labs",
+    description: "Account deletion instructions for Test4Test.",
+    canonicalPath: "/test4test/account-deletion",
+    pageName: "Test4Test Account Deletion",
+    ogType: "article",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary",
   },
   "/privacy": {
     title: "Privacy Policy | Aimtera Labs",
@@ -498,6 +541,9 @@ const AnimatedRoutes = () => {
           <Route path="/rbmarket" element={<RBMarket />} />
           <Route path="/speedmath" element={<SpeedMath />} />
           <Route path="/speedmath/privacy" element={<SpeedMathPrivacy />} />
+          <Route path="/test4test" element={<Test4Test />} />
+          <Route path="/test4test/privacy" element={<Test4TestPrivacy />} />
+          <Route path="/test4test/account-deletion" element={<Test4TestAccountDeletion />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/account-deletion" element={<AccountDeletion />} />

@@ -73,6 +73,12 @@
     --speedmath-blue: 210 100% 50%;
     --speedmath-surface: 240 10% 10%;
 
+    /* Test4Test Theme */
+    --test4test-bg: 210 30% 6%;
+    --test4test-accent: 340 80% 55%;
+    --test4test-blue: 260 80% 60%;
+    --test4test-surface: 210 20% 10%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
@@ -124,6 +130,11 @@
     background-image: linear-gradient(135deg, hsl(var(--speedmath-accent)) 0%, hsl(var(--speedmath-blue)) 100%);
   }
 
+  .text-gradient-test4test {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(var(--test4test-accent)) 0%, hsl(var(--test4test-blue)) 100%);
+  }
+
   .glow-lume {
     box-shadow: 0 0 60px -15px hsl(var(--lume-amber) / 0.3), 0 0 120px -30px hsl(var(--lume-magenta) / 0.15);
   }
@@ -138,6 +149,10 @@
 
   .glow-speedmath {
     box-shadow: 0 0 60px -15px hsl(var(--speedmath-accent) / 0.3), 0 0 120px -30px hsl(var(--speedmath-blue) / 0.15);
+  }
+
+  .glow-test4test {
+    box-shadow: 0 0 60px -15px hsl(var(--test4test-accent) / 0.3), 0 0 120px -30px hsl(var(--test4test-blue) / 0.15);
   }
 
   .bg-lume-gradient {

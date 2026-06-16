@@ -7,6 +7,7 @@ import symmetryMockup from "@/assets/symmetry-hero-phone.png";
 import rbmarketMockup from "@/assets/rbmarket-hero-laptop.png";
 import speedmathMockup from "@/assets/speedmath-mockup.png";
 
+
 interface Product {
   name: string;
   tagline: string;
@@ -82,6 +83,20 @@ const products: Product[] = [
     imageClass: "w-64 md:w-72 drop-shadow-2xl rounded-[2.5rem] glow-speedmath",
     status: "live",
     ctaLabel: "Play Now",
+  },
+  {
+    name: "Test4Test",
+    tagline: "Publish apps with confidence.",
+    description: "Mutual app testing community for Google Play developers. Ensure compliance by verifying 14-day tests with daily screenshots.",
+    link: "/test4test",
+    gradient: "from-[hsl(210_30%_6%)] via-[hsl(210_30%_8%)] to-[hsl(210_30%_6%)]",
+    accentColor: "hsl(340, 80%, 55%)",
+    textGradient: "text-gradient-test4test",
+    image: lumeMockup, // Reusing phone mockup
+    imageAlt: "Test4Test app interface",
+    imageClass: "w-64 md:w-72 drop-shadow-2xl rounded-[2.5rem] glow-test4test",
+    status: "live",
+    ctaLabel: "Get Tested",
   },
 ];
 
