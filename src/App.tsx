@@ -24,6 +24,9 @@ const SpeedMathPrivacy = lazy(() => import("./pages/SpeedMathPrivacy.tsx"));
 const Test4Test = lazy(() => import("./pages/Test4Test.tsx"));
 const Test4TestPrivacy = lazy(() => import("./pages/Test4TestPrivacy.tsx"));
 const Test4TestAccountDeletion = lazy(() => import("./pages/Test4TestAccountDeletion.tsx"));
+const ClipIt = lazy(() => import("./pages/ClipIt.tsx"));
+const ClipItPrivacy = lazy(() => import("./pages/ClipItPrivacy.tsx"));
+const ClipItTerms = lazy(() => import("./pages/ClipItTerms.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 interface RouteMetadata {
@@ -217,6 +220,46 @@ const routeMetadata: Record<string, RouteMetadata> = {
     description: "Account deletion instructions for Test4Test.",
     canonicalPath: "/test4test/account-deletion",
     pageName: "Test4Test Account Deletion",
+    ogType: "article",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary",
+  },
+  "/clipit": {
+    title: "Clip It | Aimtera Labs",
+    description: "Capture anything on your screen, without leaving what you're doing.",
+    canonicalPath: "/clipit",
+    pageName: "Clip It",
+    ogType: "website",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary_large_image",
+    schema: {
+      "@type": "SoftwareApplication",
+      name: "Clip It",
+      applicationCategory: "UtilitiesApplication",
+      operatingSystem: "Android",
+      url: `${SEO_SITE_URL}/clipit`,
+      description: "Capture anything on your screen, without leaving what you're doing.",
+      publisher: {
+        "@type": "Organization",
+        name: "Aimtera Labs",
+        url: SEO_SITE_URL,
+      },
+    },
+  },
+  "/clipit/privacy": {
+    title: "Clip It Privacy Policy | Aimtera Labs",
+    description: "Privacy policy for the Clip It app.",
+    canonicalPath: "/clipit/privacy",
+    pageName: "Clip It Privacy Policy",
+    ogType: "article",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary",
+  },
+  "/clipit/terms": {
+    title: "Clip It Terms of Service | Aimtera Labs",
+    description: "Terms of Service for the Clip It app.",
+    canonicalPath: "/clipit/terms",
+    pageName: "Clip It Terms of Service",
     ogType: "article",
     ogImagePath: "/logo.png",
     twitterCard: "summary",
@@ -544,6 +587,9 @@ const AnimatedRoutes = () => {
           <Route path="/test4test" element={<Test4Test />} />
           <Route path="/test4test/privacy" element={<Test4TestPrivacy />} />
           <Route path="/test4test/account-deletion" element={<Test4TestAccountDeletion />} />
+          <Route path="/clipit" element={<ClipIt />} />
+          <Route path="/clipit/privacy" element={<ClipItPrivacy />} />
+          <Route path="/clipit/terms" element={<ClipItTerms />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/account-deletion" element={<AccountDeletion />} />

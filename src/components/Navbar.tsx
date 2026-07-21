@@ -12,7 +12,8 @@ const Navbar = () => {
   const isRBMarket = location.pathname.startsWith("/rbmarket");
   const isSpeedMath = location.pathname.startsWith("/speedmath");
   const isTest4Test = location.pathname.startsWith("/test4test");
-  const isProductPage = isLume || isSymmetry || isRBMarket || isSpeedMath || isTest4Test;
+  const isClipIt = location.pathname.startsWith("/clipit");
+  const isProductPage = isLume || isSymmetry || isRBMarket || isSpeedMath || isTest4Test || isClipIt;
   const isLegal = ["/privacy", "/terms", "/account-deletion", "/admin/reports"].includes(location.pathname);
 
   const navClasses = isLume
@@ -25,6 +26,8 @@ const Navbar = () => {
     ? "bg-[hsl(240_10%_4%)]/90 border-b border-[hsl(15_90%_55%)]/10 backdrop-blur-xl"
     : isTest4Test
     ? "bg-[hsl(210_30%_6%)]/90 border-b border-[hsl(340_80%_55%)]/10 backdrop-blur-xl"
+    : isClipIt
+    ? "bg-[#0A0A0C]/90 border-b border-[#FF6B4A]/10 backdrop-blur-xl"
     : "bg-[hsl(220_20%_7%_/_0.9)] border-b border-[hsl(0_0%_100%_/_0.06)] backdrop-blur-xl";
 
   const linkClasses = isLume
@@ -37,6 +40,8 @@ const Navbar = () => {
     ? "text-white/70 hover:text-[hsl(15_90%_55%)] transition-colors"
     : isTest4Test
     ? "text-white/70 hover:text-[hsl(340_80%_55%)] transition-colors"
+    : isClipIt
+    ? "text-white/70 hover:text-[#FF6B4A] transition-colors"
     : "text-[hsl(0_0%_55%)] hover:text-[hsl(0_0%_95%)] transition-colors";
 
   return (
@@ -60,6 +65,8 @@ const Navbar = () => {
               <span className="text-gradient-speedmath">Speed Math</span>
             ) : isTest4Test ? (
               <span className="text-gradient-test4test">Test4Test</span>
+            ) : isClipIt ? (
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B4A] to-[#ff8c73]">Clip It</span>
             ) : (
               <span className="text-gradient-corporate">Aimtera Labs</span>
             )}
@@ -99,6 +106,13 @@ const Navbar = () => {
                         </div>
                         <p className="text-xs mt-0.5" style={{ color: "hsl(0 0% 50%)" }}>Mutual app testing</p>
                       </Link>
+                      <Link to="/clipit" className="block px-4 py-2.5 hover:bg-[hsl(0_0%_100%_/_0.05)] transition-colors text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B4A] to-[#ff8c73]">Clip It</span>
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-full" style={{ background: "rgba(255, 107, 74, 0.2)", color: "#FF6B4A" }}>NEW</span>
+                        </div>
+                        <p className="text-xs mt-0.5" style={{ color: "hsl(0 0% 50%)" }}>Smart screen capture</p>
+                      </Link>
                       <Link to="/lume" className="block px-4 py-2.5 hover:bg-[hsl(0_0%_100%_/_0.05)] transition-colors text-sm">
                         <div className="flex items-center gap-2">
                           <span className="text-gradient-lume font-semibold">Lume</span>
@@ -132,6 +146,14 @@ const Navbar = () => {
               <a href="#waitlist" className={linkClasses}>Join Beta</a>
             </>
           )}
+          {isClipIt && (
+            <>
+              <a href="#how-it-works" className={linkClasses}>How It Works</a>
+              <a href="#download" className="px-4 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-90 bg-[#FF6B4A] text-white">
+                Download
+              </a>
+            </>
+          )}
           {isRBMarket && (
             <>
               <a href="#features" className={linkClasses}>Features</a>
@@ -163,6 +185,7 @@ const Navbar = () => {
           isRBMarket ? 'border-rbmarket-accent/10 bg-rbmarket-bg' :
           isSpeedMath ? 'border-[hsl(15_90%_55%)]/10 bg-[hsl(240_10%_4%)]' :
           isTest4Test ? 'border-[hsl(340_80%_55%)]/10 bg-[hsl(210_30%_6%)]' :
+          isClipIt ? 'border-[#FF6B4A]/10 bg-[#0A0A0C]' :
           'border-[hsl(0_0%_100%_/_0.06)]'
         }`} style={!isProductPage ? { background: "hsl(220 20% 7%)" } : undefined}>
           {!isProductPage && !isLegal && (
@@ -172,9 +195,16 @@ const Navbar = () => {
               <Link to="/rbmarket" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>RBMarket <span className="text-xs text-rbmarket-accent">LIVE</span></Link>
               <Link to="/speedmath" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Speed Math <span className="text-xs text-[hsl(15_90%_55%)]">NEW</span></Link>
               <Link to="/test4test" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Test4Test <span className="text-xs text-[hsl(340_80%_55%)]">NEW</span></Link>
+              <Link to="/clipit" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Clip It <span className="text-xs text-[#FF6B4A]">NEW</span></Link>
               <Link to="/lume" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Lume <span className="text-xs text-lume-amber">BETA</span></Link>
               <Link to="/symmetryai" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>SymmetryAI <span className="text-xs text-symmetry-cyan">BETA</span></Link>
               <a href="#contact" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Contact</a>
+            </>
+          )}
+          {isClipIt && (
+            <>
+              <a href="#how-it-works" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>How It Works</a>
+              <a href="#download" className={`block ${linkClasses}`} onClick={() => setMobileOpen(false)}>Download</a>
             </>
           )}
           {isRBMarket && (

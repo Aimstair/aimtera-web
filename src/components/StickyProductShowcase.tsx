@@ -98,6 +98,20 @@ const products: Product[] = [
     status: "live",
     ctaLabel: "Get Tested",
   },
+  {
+    name: "Clip It",
+    tagline: "Capture anything on your screen.",
+    description: "A floating bubble that lets you screenshot, record, and Flashback-save the last 60 seconds — keeping everything private and local on your device.",
+    link: "/clipit",
+    gradient: "from-[hsl(10_60%_6%)] via-[hsl(10_70%_8%)] to-[hsl(10_60%_6%)]",
+    accentColor: "#FF6B4A",
+    textGradient: "bg-clip-text text-transparent bg-gradient-to-r from-[#FF6B4A] to-[#ff8c73]",
+    image: lumeMockup,
+    imageAlt: "Clip It app interface",
+    imageClass: "w-64 md:w-72 drop-shadow-2xl rounded-[2.5rem]",
+    status: "live",
+    ctaLabel: "Get Clip It",
+  },
 ];
 
 const StatusBadge = ({ status, accentColor }: { status: string; accentColor: string }) => {

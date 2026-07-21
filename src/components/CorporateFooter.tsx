@@ -16,6 +16,7 @@ const CorporateFooter = () => {
             <div className="space-y-2">
               <Link to="/rbmarket" className="block text-sm transition-colors" style={{ color: "hsl(var(--corp-dark-muted))" }}>RBMarket <span className="text-xs text-rbmarket-accent">LIVE</span></Link>
               <Link to="/speedmath" className="block text-sm transition-colors" style={{ color: "hsl(var(--corp-dark-muted))" }}>Speed Math <span className="text-xs text-[hsl(15_90%_55%)]">NEW</span></Link>
+              <Link to="/clipit" className="block text-sm transition-colors" style={{ color: "hsl(var(--corp-dark-muted))" }}>Clip It <span className="text-xs text-[#FF6B4A]">NEW</span></Link>
               <Link to="/lume" className="block text-sm transition-colors" style={{ color: "hsl(var(--corp-dark-muted))" }}>Lume</Link>
               <Link to="/symmetryai" className="block text-sm transition-colors" style={{ color: "hsl(var(--corp-dark-muted))" }}>SymmetryAI</Link>
             </div>
