@@ -4,80 +4,43 @@
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    /* Apple-style neutral palette (HSL channels for shadcn compatibility) */
+    --background: 0 0% 100%;
+    --foreground: 240 3% 12%;
 
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 240 3% 12%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 240 3% 12%;
 
-    --primary: 213 50% 24%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 211 100% 45%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 20% 96%;
-    --secondary-foreground: 215 25% 15%;
+    --secondary: 240 11% 96%;
+    --secondary-foreground: 240 3% 12%;
 
-    --muted: 210 15% 93%;
-    --muted-foreground: 215 10% 50%;
+    --muted: 240 11% 96%;
+    --muted-foreground: 240 2% 44%;
 
-    --accent: 213 50% 24%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 211 100% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214 20% 90%;
-    --input: 214 20% 90%;
-    --ring: 213 50% 24%;
+    --border: 240 6% 83%;
+    --input: 240 6% 83%;
+    --ring: 211 100% 45%;
 
-    --radius: 0.75rem;
+    --radius: 1.125rem;
 
-    /* Aimtera Corporate */
-    --corporate-blue: 213 50% 24%;
-    --corporate-blue-light: 213 60% 40%;
-    --corporate-slate: 215 15% 45%;
-    --corporate-bg-warm: 40 20% 97%;
-
-    /* Corporate Dark */
+    /* Dark palette still used by the internal admin dashboard */
     --corp-dark-bg: 220 20% 7%;
     --corp-dark-elevated: 220 18% 11%;
     --corp-dark-surface: 220 16% 15%;
     --corp-dark-foreground: 0 0% 95%;
     --corp-dark-muted: 0 0% 55%;
-
-    /* Lume Dark Theme */
-    --lume-bg: 230 50% 6%;
-    --lume-bg-elevated: 230 40% 10%;
-    --lume-foreground: 220 20% 92%;
-    --lume-amber: 38 92% 50%;
-    --lume-magenta: 330 80% 60%;
-    --lume-glow: 38 100% 60%;
-
-    /* SymmetryAI Theme */
-    --symmetry-bg: 220 30% 8%;
-    --symmetry-cyan: 185 80% 55%;
-    --symmetry-purple: 260 70% 60%;
-    --symmetry-neon-green: 145 80% 55%;
-
-    /* RBMarket Theme */
-    --rbmarket-bg: 220 20% 8%;
-    --rbmarket-accent: 145 60% 45%;
-    --rbmarket-blue: 200 80% 55%;
-    --rbmarket-surface: 220 15% 14%;
-
-    /* Speed Math Theme */
-    --speedmath-bg: 240 10% 4%;
-    --speedmath-accent: 15 90% 55%;
-    --speedmath-blue: 210 100% 50%;
-    --speedmath-surface: 240 10% 10%;
-
-    /* Test4Test Theme */
-    --test4test-bg: 210 30% 6%;
-    --test4test-accent: 340 80% 55%;
-    --test4test-blue: 260 80% 60%;
-    --test4test-surface: 210 20% 10%;
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -95,131 +58,141 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-size: 17px;
+    line-height: 1.47;
+    letter-spacing: -0.022em;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight;
+    @apply font-semibold;
+    letter-spacing: -0.025em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Shared typography for policy pages. Policy wording is untouched; only presentation lives here. */
+  .legal-prose {
+    color: #424245;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  .legal-prose > * + * {
+    margin-top: 2.75rem;
+  }
+
+  .legal-prose h2 {
+    color: #1d1d1f;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+  }
+
+  .legal-prose h3 {
+    color: #1d1d1f;
+    font-size: 19px;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .legal-prose p + p,
+  .legal-prose p + ul,
+  .legal-prose ul + p,
+  .legal-prose p + ol,
+  .legal-prose ol + p {
+    margin-top: 0.75rem;
+  }
+
+  .legal-prose ul {
+    list-style: disc;
+    padding-left: 1.5rem;
+  }
+
+  .legal-prose ol {
+    list-style: decimal;
+    padding-left: 1.5rem;
+  }
+
+  .legal-prose li + li {
+    margin-top: 0.35rem;
+  }
+
+  .legal-prose strong {
+    color: #1d1d1f;
+    font-weight: 600;
+  }
+
+  .legal-prose a {
+    color: #0066cc;
+  }
+
+  .legal-prose a:hover {
+    text-decoration: underline;
+  }
+
+  .legal-prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    text-align: left;
+  }
+
+  .legal-prose .legal-table {
+    overflow-x: auto;
+    border: 1px solid #d2d2d7;
+    border-radius: 14px;
+    margin-top: 0.75rem;
+  }
+
+  .legal-prose th {
+    background: #f5f5f7;
+    color: #1d1d1f;
+    font-weight: 600;
+    padding: 12px 16px;
+  }
+
+  .legal-prose td {
+    padding: 12px 16px;
+    border-top: 1px solid #d2d2d7;
+    vertical-align: top;
+  }
+
+  .legal-lead {
+    color: #1d1d1f;
+    font-size: 19px;
+    line-height: 1.55;
   }
 }
 
 @layer utilities {
-  .text-gradient-corporate {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--corporate-blue)) 0%, hsl(var(--corporate-blue-light)) 100%);
+  .text-balance {
+    text-wrap: balance;
   }
 
-  .text-gradient-lume {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--lume-amber)) 0%, hsl(var(--lume-magenta)) 100%);
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
   }
 
-  .text-gradient-symmetry {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--symmetry-cyan)) 0%, hsl(var(--symmetry-purple)) 100%);
+  .no-scrollbar {
+    scrollbar-width: none;
   }
-
-  .text-gradient-rbmarket {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--rbmarket-accent)) 0%, hsl(var(--rbmarket-blue)) 100%);
-  }
-
-  .text-gradient-speedmath {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--speedmath-accent)) 0%, hsl(var(--speedmath-blue)) 100%);
-  }
-
-  .text-gradient-test4test {
-    @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(var(--test4test-accent)) 0%, hsl(var(--test4test-blue)) 100%);
-  }
-
-  .glow-lume {
-    box-shadow: 0 0 60px -15px hsl(var(--lume-amber) / 0.3), 0 0 120px -30px hsl(var(--lume-magenta) / 0.15);
-  }
-
-  .glow-symmetry {
-    box-shadow: 0 0 60px -15px hsl(var(--symmetry-cyan) / 0.3), 0 0 120px -30px hsl(var(--symmetry-purple) / 0.15);
-  }
-
-  .glow-rbmarket {
-    box-shadow: 0 0 60px -15px hsl(var(--rbmarket-accent) / 0.3), 0 0 120px -30px hsl(var(--rbmarket-blue) / 0.15);
-  }
-
-  .glow-speedmath {
-    box-shadow: 0 0 60px -15px hsl(var(--speedmath-accent) / 0.3), 0 0 120px -30px hsl(var(--speedmath-blue) / 0.15);
-  }
-
-  .glow-test4test {
-    box-shadow: 0 0 60px -15px hsl(var(--test4test-accent) / 0.3), 0 0 120px -30px hsl(var(--test4test-blue) / 0.15);
-  }
-
-  .bg-lume-gradient {
-    background: linear-gradient(135deg, hsl(var(--lume-bg)) 0%, hsl(230 45% 8%) 50%, hsl(260 30% 10%) 100%);
-  }
-
-  .bg-symmetry-gradient {
-    background: linear-gradient(135deg, hsl(var(--symmetry-bg)) 0%, hsl(240 25% 10%) 50%, hsl(200 30% 8%) 100%);
-  }
-
-  .bg-rbmarket-gradient {
-    background: linear-gradient(135deg, hsl(var(--rbmarket-bg)) 0%, hsl(160 15% 8%) 50%, hsl(200 20% 6%) 100%);
-  }
-
-  .glassmorphism {
-    background: hsl(0 0% 100% / 0.05);
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(0 0% 100% / 0.1);
-  }
-
-  .scan-line {
-    background: linear-gradient(
-      180deg,
-      transparent 0%,
-      hsl(var(--symmetry-cyan) / 0.6) 50%,
-      transparent 100%
-    );
-  }
-}
-
-/* Custom animations */
-@keyframes fadeSlideIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeScaleIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes scanDown {
-  0% { top: -10%; }
-  100% { top: 110%; }
-}
-
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes scroll-x {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-
-@keyframes countUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes glowPulse {
-  0%, 100% { box-shadow: 0 0 20px hsl(var(--rbmarket-accent) / 0.4), 0 0 60px hsl(var(--rbmarket-accent) / 0.2); }
-  50% { box-shadow: 0 0 30px hsl(var(--rbmarket-accent) / 0.6), 0 0 80px hsl(var(--rbmarket-accent) / 0.3); }
-}
-
-@keyframes spotlightSweep {
-  0% { transform: translateX(-100%) rotate(15deg); }
-  100% { transform: translateX(200%) rotate(15deg); }
 }

@@ -1,319 +1,430 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import { 
-  Download, 
-  ShieldCheck, 
-  History, 
-  Search, 
-  Crop, 
-  Folders, 
-  ChevronDown, 
-  Check, 
-  Smartphone,
-  Video
-} from "lucide-react";
-import { useState } from "react";
-import Navbar from "@/components/Navbar";
-import ScrollReveal from "@/components/ScrollReveal";
+import GlobalNav from "@/components/site/GlobalNav";
+import LocalNav from "@/components/site/LocalNav";
+import SiteFooter from "@/components/site/SiteFooter";
+import AppIcon from "@/components/site/AppIcon";
+import Segmented from "@/components/site/Segmented";
 import PageTransition from "@/components/PageTransition";
+import { BehindTheBuild, PillLink, StoreGallery } from "@/components/site/Section";
+import { getApp } from "@/content/apps";
+import gameplay from "@/assets/apps/clipit-01.png";
+import shotDoubleTap from "@/assets/apps/clipit-02.png";
+import shotStorage from "@/assets/apps/clipit-03.png";
+import shotVault from "@/assets/apps/clipit-04.png";
+import shotCollections from "@/assets/apps/clipit-05.png";
 
-const FaqItem = ({ question, answer }: { question: string, answer: string }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  
+const CORAL = "#ff6b4a";
+const app = getApp("clipit");
+
+type Gesture = "tap" | "hold" | "double";
+
+const gestures: Array<{ id: Gesture; title: string; desc: string }> = [
+  { id: "tap", title: "Tap", desc: "Take a screenshot." },
+  { id: "hold", title: "Hold", desc: "Start a manual screen recording." },
+  { id: "double", title: "Double-tap", desc: "Save the last 15–60 seconds as a flashback clip." },
+];
+
+const BubbleDemo = () => {
+  const [gesture, setGesture] = useState<Gesture>("double");
+  const [flashing, setFlashing] = useState(false);
+  const timer = useRef<number>();
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  const pick = (id: Gesture) => {
+    setGesture(id);
+    window.clearTimeout(timer.current);
+    if (id === "tap") {
+      setFlashing(true);
+      timer.current = window.setTimeout(() => setFlashing(false), 350);
+    }
+  };
+
+  const toast =
+    gesture === "tap" ? "Screenshot saved to Vault" : gesture === "hold" ? "Recording · tap the bubble to stop" : "Flashback saved · last 30s";
+  const ring =
+    gesture === "hold"
+      ? "0 0 0 8px rgba(255,59,48,0.35)"
+      : gesture === "double"
+        ? "0 0 0 10px rgba(255,107,74,0.25), 0 0 0 22px rgba(255,107,74,0.10)"
+        : "none";
+
   return (
-    <div className="border-b border-zinc-800/50">
-      <button 
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full justify-between items-center py-4 text-left focus:outline-none"
-      >
-        <span className="font-medium text-zinc-200">{question}</span>
-        <ChevronDown className={`w-5 h-5 text-zinc-500 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-      </button>
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-96 pb-4 opacity-100' : 'max-h-0 opacity-0'}`}
-      >
-        <p className="text-zinc-400 text-sm leading-relaxed">{answer}</p>
+    <div className="mt-14 flex flex-wrap items-center gap-12">
+      <div role="radiogroup" aria-label="Gesture" className="flex flex-[1_1_300px] flex-col gap-1">
+        {gestures.map((g) => {
+          const on = g.id === gesture;
+          return (
+            <button
+              key={g.id}
+              type="button"
+              role="radio"
+              aria-checked={on}
+              onClick={() => pick(g.id)}
+              className={`rounded-[18px] px-[22px] py-5 text-left transition-all ${on ? "bg-[#1c1c1e] shadow-[inset_3px_0_0_#ff6b4a]" : "opacity-60 hover:opacity-90"}`}
+            >
+              <span className="block text-2xl font-bold tracking-[-0.01em]">{g.title}</span>
+              <span className="mt-1 block text-[17px] text-[#a1a1a6]">{g.desc}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="flex min-w-0 flex-[2_1_520px] justify-center">
+        <div className="relative aspect-[600/290] w-[600px] max-w-full overflow-hidden rounded-[44px] border-[12px] border-[#2c2c2e] bg-[#111]">
+          <img src={gameplay} alt="Mobile game running under the Clip It bubble" className="absolute left-0 top-[-205%] w-[125%] max-w-none" />
+          <div aria-hidden="true" className="absolute inset-0 bg-white transition-opacity duration-300" style={{ opacity: flashing ? 0.75 : 0 }} />
+          {gesture === "hold" && (
+            <div className="absolute left-[18px] top-4 flex items-center gap-2 rounded-full bg-black/65 px-3 py-1.5 text-[13px] font-semibold">
+              <span className="h-[9px] w-[9px] rounded-full bg-[#ff3b30]" />
+              REC 00:07
+            </div>
+          )}
+          <div
+            className="absolute right-[22px] top-1/2 flex h-[62px] w-[62px] -translate-y-1/2 items-center justify-center rounded-full border-4 bg-[rgba(10,10,12,0.75)] transition-shadow duration-300"
+            style={{ borderColor: CORAL, boxShadow: ring }}
+          >
+            <span className="h-[22px] w-[22px] rounded-md" style={{ background: CORAL }} />
+          </div>
+          <div
+            className="absolute bottom-[18px] left-1/2 flex -translate-x-1/2 items-center gap-2.5 whitespace-nowrap rounded-[14px] border border-white/10 bg-[rgba(28,28,30,0.92)] px-4 py-2.5 text-sm font-semibold"
+            aria-live="polite"
+          >
+            <span className="h-2 w-2 rounded-full" style={{ background: CORAL }} />
+            {toast}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-const ClipIt = () => {
+const FlashbackBuffer = () => {
+  const [length, setLength] = useState(30);
+  const width = `${(length / 60) * 34}%`;
+
   return (
-    <PageTransition>
-      <div className="min-h-screen bg-[#0A0A0C] text-zinc-300 font-sans selection:bg-[#FF6B4A]/30">
-        <Navbar />
-        
-        {/* Hero Section */}
-        <div className="relative pt-32 pb-20 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,#FF6B4A15_0%,#0A0A0C_70%)] pointer-events-none" />
-          <div className="container mx-auto px-6 relative z-10 text-center max-w-4xl">
-            <ScrollReveal>
-              <div className="inline-flex items-center justify-center gap-2 mb-6 bg-zinc-900/50 border border-zinc-800 rounded-full px-4 py-1.5 backdrop-blur-sm">
-                <div className="w-2 h-2 rounded-full bg-[#FF6B4A] animate-pulse" />
-                <span className="text-sm font-medium text-zinc-300">Introducing Clip It</span>
-              </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
-                Capture anything, <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B4A] to-[#ff8c73]">without leaving your app.</span>
-              </h1>
-              <p className="text-lg md:text-xl text-zinc-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-                A floating bubble that lets you screenshot, record, and Flashback-save the last 60 seconds — keeping everything private and local on your device.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <a 
-                  href="#download" 
-                  className="flex items-center gap-2 bg-[#FF6B4A] hover:bg-[#ff8c73] text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 shadow-[0_0_20px_-5px_#FF6B4A] w-full sm:w-auto justify-center"
-                >
-                  <Download className="w-5 h-5" />
-                  Get it on Google Play
-                </a>
-                <a 
-                  href="#how-it-works"
-                  className="px-8 py-4 rounded-xl font-medium text-zinc-300 hover:text-white bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 transition-all w-full sm:w-auto text-center"
-                >
-                  See how it works
-                </a>
-              </div>
-            </ScrollReveal>
+    <section id="flashback" className="scroll-mt-14 bg-white px-[22px] py-[140px] text-apple-ink">
+      <div className="mx-auto max-w-[980px]">
+        <p className="text-[17px] font-semibold text-[#e8492b]">02 · The flashback buffer</p>
+        <h2 className="mt-2 text-[clamp(36px,5vw,56px)] font-bold leading-[1.07] tracking-[-0.025em]">
+          Other apps record everything.
+          <br />
+          Clip It saves just the highlight.
+        </h2>
+        <p className="mt-3.5 max-w-[680px] text-[21px] leading-[1.4] text-apple-secondary">
+          Your recent screen activity sits in a rolling buffer. Only the window you choose is ever written to storage.
+        </p>
 
-            {/* Hero Visual Placeholder */}
-            <ScrollReveal delay={200}>
-              <div className="mt-16 relative mx-auto max-w-3xl">
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-transparent to-transparent z-10 top-1/2" />
-                <div className="aspect-video bg-zinc-900 border border-zinc-800 rounded-2xl shadow-2xl overflow-hidden relative flex items-center justify-center group">
-                  {/* Decorative UI elements mimicking the app */}
-                  <div className="absolute top-4 left-4 right-4 flex justify-between items-center opacity-30">
-                    <div className="w-20 h-4 bg-zinc-700 rounded" />
-                    <div className="flex gap-2">
-                      <div className="w-4 h-4 bg-zinc-700 rounded-full" />
-                      <div className="w-4 h-4 bg-zinc-700 rounded-full" />
-                    </div>
-                  </div>
-                  
-                  {/* The Floating Bubble Mockup */}
-                  <div className="w-16 h-16 bg-zinc-800 rounded-full shadow-lg border border-zinc-700 flex items-center justify-center relative group-hover:scale-110 transition-transform duration-500 z-20">
-                    <div className="w-6 h-6 border-2 border-[#FF6B4A] rounded-full flex items-center justify-center">
-                      <div className="w-2 h-2 bg-[#FF6B4A] rounded-full" />
-                    </div>
-                    {/* Ring animation */}
-                    <div className="absolute inset-0 border border-[#FF6B4A] rounded-full animate-ping opacity-20" />
-                  </div>
-                  
-                  <div className="absolute bottom-6 text-center z-20">
-                    <span className="text-zinc-500 text-sm tracking-widest uppercase font-semibold">Hero App Demo</span>
-                  </div>
-                </div>
-              </div>
-            </ScrollReveal>
+        <Segmented
+          className="mt-12"
+          ariaLabel="Flashback length"
+          value={length}
+          onChange={setLength}
+          options={[15, 30, 45, 60].map((n) => ({ value: n, label: `${n}s` }))}
+        />
+
+        <div className="mt-10">
+          <div className="flex justify-between text-[13px] text-apple-secondary">
+            <span>Match starts</span>
+            <span>Double-tap</span>
+          </div>
+          <div className="mt-2 text-[15px] font-semibold">Typical screen recorder</div>
+          <div className="mt-2 h-11 rounded-[10px] bg-[repeating-linear-gradient(90deg,#d2d2d7_0_2px,#e8e8ed_2px_14px)]" />
+          <div className="mt-1.5 text-sm text-apple-secondary">Records the whole session. You scrub through it later.</div>
+
+          <div className="mt-8 text-[15px] font-semibold">Clip It</div>
+          <div className="relative mt-2 h-11 overflow-hidden rounded-[10px] bg-apple-gray">
+            <div
+              className="absolute inset-y-0 right-0 rounded-[10px] transition-all duration-500 ease-out"
+              style={{ width, background: "linear-gradient(90deg, rgba(255,107,74,0.25), #ff6b4a)" }}
+            />
+          </div>
+          <div className="mt-1.5 text-sm text-apple-secondary">
+            Keeps only the last <strong className="text-apple-ink">{length} seconds</strong>. Everything before that is discarded, so
+            storage stays small.
           </div>
         </div>
-
-        {/* How It Works */}
-        <div id="how-it-works" className="py-24 bg-zinc-900/30 border-y border-zinc-800/50">
-          <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">How it works</h2>
-                <p className="text-zinc-400">Capture the perfect moment in seconds.</p>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-4 gap-8 max-w-5xl mx-auto">
-              {[
-                { step: "01", title: "Always Ready", desc: "The floating bubble sits quietly over any app, waiting." },
-                { step: "02", title: "Quick Actions", desc: "Tap for a screenshot, hold to record, double-tap to save the last 60 seconds." },
-                { step: "03", title: "Private Vault", desc: "Everything lands in your secure Vault, organized and searchable." },
-                { step: "04", title: "Edit & Share", desc: "Trim, crop, and export — share or save, watermark-free." }
-              ].map((item, i) => (
-                <ScrollReveal key={i} delay={i * 100}>
-                  <div className="relative p-6 rounded-2xl bg-zinc-900 border border-zinc-800 hover:border-zinc-700 transition-colors h-full">
-                    <div className="text-[#FF6B4A] text-xl font-bold font-mono mb-4">{item.step}</div>
-                    <h3 className="text-lg font-semibold text-white mb-2">{item.title}</h3>
-                    <p className="text-sm text-zinc-400">{item.desc}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Features Grid */}
-        <div className="py-24">
-          <div className="container mx-auto px-6 max-w-6xl">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-12 text-center">Everything you need</h2>
-            </ScrollReveal>
-            
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[
-                { icon: <History />, title: "Flashback Buffer", desc: "Never miss a moment. Save the last 15–60 seconds instantly." },
-                { icon: <ShieldCheck />, title: "Fully Local", desc: "Nothing uploaded, nothing tracked. Your clips stay on your device." },
-                { icon: <Search />, title: "Smart Search", desc: "Find any screenshot by what's written in it using on-device OCR." },
-                { icon: <Crop />, title: "Built-in Editor", desc: "Trim, crop, and export without leaving the app." },
-                { icon: <Smartphone />, title: "Custom Region", desc: "Record just the part of the screen you need." },
-                { icon: <Folders />, title: "Collections", desc: "Organize your clips into albums that make sense to you." }
-              ].map((feature, i) => (
-                <ScrollReveal key={i} delay={i * 100}>
-                  <div className="p-6 rounded-2xl bg-gradient-to-b from-zinc-900 to-zinc-950 border border-zinc-800 hover:border-zinc-700 transition-all hover:-translate-y-1">
-                    <div className="w-12 h-12 rounded-lg bg-[#FF6B4A]/10 text-[#FF6B4A] flex items-center justify-center mb-4">
-                      {feature.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold text-white mb-2">{feature.title}</h3>
-                    <p className="text-zinc-400 text-sm leading-relaxed">{feature.desc}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Privacy / Trust Section */}
-        <div className="py-24 bg-zinc-900/30 border-y border-zinc-800/50">
-          <div className="container mx-auto px-6 max-w-4xl text-center">
-            <ScrollReveal>
-              <ShieldCheck className="w-16 h-16 text-[#FF6B4A] mx-auto mb-6" />
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Your data is yours. Period.</h2>
-              <p className="text-lg text-zinc-400 mb-8 max-w-2xl mx-auto leading-relaxed">
-                Clip It was built with a fundamental belief: screen capture tools shouldn't spy on you. 
-                There are no accounts, no cloud uploads, and no tracking SDKs. Everything happens locally on your device's hardware.
-              </p>
-              <Link to="/clipit/privacy" className="text-[#FF6B4A] hover:text-[#ff8c73] font-medium inline-flex items-center gap-1 transition-colors">
-                Read our plain-English Privacy Policy <span aria-hidden="true">&rarr;</span>
-              </Link>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        {/* Pricing */}
-        <div className="py-24">
-          <div className="container mx-auto px-6 max-w-4xl">
-            <ScrollReveal>
-              <div className="text-center mb-16">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Simple Pricing</h2>
-                <p className="text-zinc-400">Start for free, upgrade when you need to.</p>
-              </div>
-            </ScrollReveal>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Free Tier */}
-              <ScrollReveal delay={100}>
-                <div className="p-8 rounded-3xl bg-zinc-900 border border-zinc-800">
-                  <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
-                  <p className="text-zinc-400 mb-6">Perfect for basic capturing</p>
-                  <div className="text-4xl font-bold text-white mb-8">$0</div>
-                  <ul className="space-y-4 mb-8">
-                    {["Unlimited screenshots", "Basic screen recording", "Local Vault storage", "Standard editing tools"].map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-zinc-300">
-                        <Check className="w-5 h-5 text-[#FF6B4A]" />
-                        {feature}
-                      </li>
-                    ))}
-                    <li className="flex items-center gap-3 text-zinc-500 italic">
-                      <Check className="w-5 h-5 opacity-0" />
-                      Contains small watermark
-                    </li>
-                  </ul>
-                </div>
-              </ScrollReveal>
-
-              {/* Premium Tier */}
-              <ScrollReveal delay={200}>
-                <div className="p-8 rounded-3xl bg-gradient-to-b from-[#FF6B4A]/10 to-zinc-900 border border-[#FF6B4A]/30 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 bg-[#FF6B4A] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMMENDED</div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Premium</h3>
-                  <p className="text-zinc-400 mb-6">For power users & creators</p>
-                  <div className="text-4xl font-bold text-white mb-8">Unlock In-App</div>
-                  <ul className="space-y-4 mb-8">
-                    {["Everything in Free", "No watermarks", "Flashback Buffer feature", "Smart OCR Search", "Custom Collections"].map((feature, i) => (
-                      <li key={i} className="flex items-center gap-3 text-white">
-                        <Check className="w-5 h-5 text-[#FF6B4A]" />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href="#download" className="block w-full text-center bg-[#FF6B4A] hover:bg-[#ff8c73] text-white py-3 rounded-xl font-medium transition-colors">
-                    Download to view plans
-                  </a>
-                </div>
-              </ScrollReveal>
-            </div>
-          </div>
-        </div>
-
-        {/* FAQ */}
-        <div className="py-24 bg-zinc-900/30 border-t border-zinc-800/50">
-          <div className="container mx-auto px-6 max-w-3xl">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-10 text-center">Frequently Asked Questions</h2>
-            </ScrollReveal>
-            <ScrollReveal delay={100}>
-              <div className="border-t border-zinc-800/50">
-                <FaqItem 
-                  question="Does this work in the background while I game?" 
-                  answer="Yes! The floating bubble and Flashback Buffer remain active over any full-screen game or app, allowing you to capture epic moments without interrupting your gameplay."
-                />
-                <FaqItem 
-                  question="Is my data ever uploaded anywhere?" 
-                  answer="No. Clip It is a 100% local app. We do not have servers, and we do not collect your screenshots or recordings. Everything stays on your device."
-                />
-                <FaqItem 
-                  question="What permissions does the app need, and why?" 
-                  answer="It requires 'Display over other apps' to show the floating bubble, and 'Screen Recording' to actually capture the screen when you tap the bubble. We also request Storage permissions to save your clips."
-                />
-                <FaqItem 
-                  question="iOS or Android?" 
-                  answer="Currently, Clip It is available exclusively for Android via the Google Play Store, as it relies on specific Android system capabilities for the floating bubble mechanic."
-                />
-              </div>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        {/* CTA & Footer */}
-        <div id="download" className="py-24 border-t border-zinc-800">
-          <div className="container mx-auto px-6 text-center max-w-2xl">
-            <ScrollReveal>
-              <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl mx-auto mb-6 flex items-center justify-center">
-                <div className="w-6 h-6 border-2 border-[#FF6B4A] rounded-full flex items-center justify-center">
-                  <div className="w-2 h-2 bg-[#FF6B4A] rounded-full" />
-                </div>
-              </div>
-              <h2 className="text-3xl font-bold text-white mb-6">Ready to start capturing?</h2>
-              <a 
-                href="#" 
-                className="inline-flex items-center gap-2 bg-[#FF6B4A] hover:bg-[#ff8c73] text-white px-8 py-4 rounded-xl font-semibold transition-all hover:scale-105 mx-auto"
-                onClick={(e) => e.preventDefault()}
-              >
-                <Download className="w-5 h-5" />
-                Get it on Google Play
-              </a>
-              <p className="text-sm text-zinc-500 mt-6">Requires Android 10.0 or higher.</p>
-            </ScrollReveal>
-          </div>
-        </div>
-
-        <footer className="border-t border-white/10 py-12 bg-[#0A0A0C]">
-          <div className="container mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-2">
-               <div className="w-6 h-6 border-2 border-[#FF6B4A] rounded-full flex items-center justify-center">
-                  <div className="w-1.5 h-1.5 bg-[#FF6B4A] rounded-full" />
-                </div>
-              <span className="font-bold text-white tracking-wide">Clip It</span>
-            </div>
-            
-            <div className="flex flex-wrap justify-center gap-6 text-sm text-zinc-500">
-              <Link to="/clipit/privacy" className="hover:text-zinc-300 transition-colors">Privacy Policy</Link>
-              <Link to="/clipit/terms" className="hover:text-zinc-300 transition-colors">Terms of Service</Link>
-              <a href="mailto:support@aimteralabs.com" className="hover:text-zinc-300 transition-colors">Contact Support</a>
-            </div>
-            
-            <p className="text-sm text-zinc-600">&copy; {new Date().getFullYear()} Aimtera Labs.</p>
-          </div>
-        </footer>
       </div>
-    </PageTransition>
+    </section>
   );
 };
+
+type VaultFilter = "All" | "Images" | "GIFs" | "Videos";
+
+const vaultItems = [
+  { label: "Clip 3:02 PM (Edited)", type: "Videos", dur: "0:15", ocr: "TRIPLE KILL", x: 0, y: -205 },
+  { label: "Screenshot 3:13 PM", type: "Images", ocr: "$657", x: -80, y: -230 },
+  { label: "GIF 3:20 PM", type: "GIFs", ocr: "", x: -40, y: -255 },
+  { label: "Screenshot 3:14 PM (Edited)", type: "Images", ocr: "Recall", x: -10, y: -262 },
+  { label: "Clip 2:47 PM", type: "Videos", dur: "0:30", ocr: "Mystery Codex", x: -83, y: -192 },
+  { label: "Screenshot 2:40 PM", type: "Images", ocr: "", x: -60, y: -215 },
+];
+
+const Vault = () => {
+  const [filter, setFilter] = useState<VaultFilter>("All");
+  const [query, setQuery] = useState("");
+  const q = query.toLowerCase();
+  const items = vaultItems.filter(
+    (item) => (filter === "All" || item.type === filter) && (!q || item.ocr.toLowerCase().includes(q)),
+  );
+
+  return (
+    <section id="vault" className="scroll-mt-14 bg-apple-gray px-[22px] py-[140px] text-apple-ink">
+      <div className="mx-auto flex max-w-[1080px] flex-wrap items-center gap-16">
+        <div className="flex-[1_1_360px]">
+          <p className="text-[17px] font-semibold text-[#e8492b]">03 · The Vault</p>
+          <h2 className="mt-2 text-[clamp(36px,5vw,52px)] font-bold leading-[1.07] tracking-[-0.025em]">Every clip, automatically organized.</h2>
+          <p className="mt-3.5 text-[19px] leading-[1.47] text-apple-secondary">
+            Captures land in a private, searchable Vault. On-device OCR reads the text inside your screenshots, so you can search
+            for what was on screen.
+          </p>
+          <p className="mb-2.5 mt-7 text-[15px] font-semibold">Try searching</p>
+          <div className="flex flex-wrap gap-2">
+            {["triple kill", "mystery codex"].map((term) => {
+              const on = query === term;
+              return (
+                <button
+                  key={term}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => {
+                    setQuery(term);
+                    setFilter("All");
+                  }}
+                  className={`min-h-10 rounded-full border px-4 text-[15px] transition-colors ${
+                    on ? "border-apple-ink bg-apple-ink text-white" : "border-apple-hairline bg-white hover:border-apple-ink"
+                  }`}
+                >
+                  “{term}”
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setQuery("")}
+              className="min-h-10 rounded-full border border-apple-hairline bg-white px-4 text-[15px] hover:border-apple-ink"
+            >
+              Clear search
+            </button>
+          </div>
+          <p className="mt-7 text-[15px] text-apple-secondary">
+            You can also trim, crop and export clips without leaving the app, and group them into Collections.
+          </p>
+        </div>
+
+        <div className="mx-auto flex-none">
+          <div className="flex h-[740px] w-[340px] flex-col overflow-hidden rounded-[54px] border-[12px] border-apple-ink bg-[#0b0b0d] text-[#f5f5f7] shadow-[0_30px_60px_rgba(0,0,0,0.18)] sm:w-[360px]">
+            <div className="h-[34px]" />
+            <div className="flex items-end justify-between px-[18px] pt-2">
+              <div>
+                <div className="text-[10px] tracking-[0.12em] text-[#8e8e93]">CLIP IT</div>
+                <div className="text-2xl font-bold">Vault</div>
+              </div>
+              <div className="rounded-full border px-2.5 py-1 text-[11px] font-bold" style={{ borderColor: CORAL, color: CORAL }}>
+                FREE
+              </div>
+            </div>
+            <div className={`mx-[18px] mt-3 flex items-center gap-2 rounded-xl bg-[#1c1c1f] px-3 py-2.5 text-[13px] ${query ? "text-[#f5f5f7]" : "text-[#8e8e93]"}`}>
+              <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8e8e93" strokeWidth="2.4" strokeLinecap="round">
+                <circle cx="11" cy="11" r="7" />
+                <path d="M20 20l-3.5-3.5" />
+              </svg>
+              {query || "Search captures, tags, OCR…"}
+            </div>
+            <div className="mx-[18px] mt-3 flex gap-1.5" role="radiogroup" aria-label="Filter">
+              {(["All", "Images", "GIFs", "Videos"] as VaultFilter[]).map((f) => {
+                const on = f === filter;
+                return (
+                  <button
+                    key={f}
+                    type="button"
+                    role="radio"
+                    aria-checked={on}
+                    onClick={() => setFilter(f)}
+                    className={`rounded-full border px-3 py-1.5 text-xs ${on ? "text-[#f5f5f7]" : "border-[#1c1c1f] bg-[#1c1c1f] text-[#c7c7cc]"}`}
+                    style={on ? { background: "rgba(255,107,74,0.12)", borderColor: CORAL } : undefined}
+                  >
+                    {f}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="mx-[18px] mt-3 grid flex-1 grid-cols-2 content-start gap-2 overflow-hidden">
+              {items.map((item) => (
+                <div
+                  key={item.label}
+                  className="relative h-[150px] overflow-hidden rounded-xl bg-[#222]"
+                  style={q ? { boxShadow: `inset 0 0 0 2px ${CORAL}` } : undefined}
+                >
+                  <img src={gameplay} alt="" className="absolute w-[300px] max-w-none" style={{ left: item.x, top: item.y }} />
+                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 to-transparent px-2 pb-1.5 pt-[18px] text-[11px] font-semibold">
+                    {item.label}
+                  </div>
+                  {item.type === "Videos" && (
+                    <div className="absolute right-1.5 top-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-[10px]">▶ {item.dur}</div>
+                  )}
+                  {q && (
+                    <div className="absolute left-1.5 top-1.5 rounded-md px-1.5 py-0.5 text-[10px] font-bold" style={{ background: CORAL }}>
+                      Text: {item.ocr}
+                    </div>
+                  )}
+                </div>
+              ))}
+              {items.length === 0 && <div className="col-span-2 py-10 text-center text-[13px] text-[#8e8e93]">No captures match.</div>}
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const checkIcon = (
+  <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#e8492b" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 6L9 17l-5-5" />
+  </svg>
+);
+
+const StorageAndPrivacy = () => (
+  <section className="bg-white px-[22px] py-[140px] text-apple-ink">
+    <div className="mx-auto flex max-w-[1080px] flex-wrap-reverse items-center gap-16">
+      <div className="mx-auto w-[360px] max-w-full flex-none rounded-[28px] bg-[#141416] p-6 text-[#f5f5f7] shadow-[0_30px_60px_rgba(0,0,0,0.18)]">
+        <div className="text-[10px] tracking-[0.12em] text-[#8e8e93]">MANAGE</div>
+        <div className="text-xl font-bold">Storage &amp; Settings</div>
+        <div className="mt-4 rounded-[18px] bg-[#1f1f22] p-[18px]">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-[26px] font-bold">129.1</span>
+              <span className="text-[#8e8e93]"> / 512 MB</span>
+            </div>
+            <span className="rounded-lg border border-[#3a3a3c] px-2 py-0.5 text-xs">25%</span>
+          </div>
+          <div className="mt-0.5 text-[10px] tracking-[0.1em] text-[#8e8e93]">ON-DEVICE STORAGE</div>
+          <div className="mt-3 flex h-[7px] overflow-hidden rounded bg-[#2c2c2e]">
+            <span className="w-[14.8%]" style={{ background: CORAL }} />
+            <span className="w-[10.4%] bg-[#8b6cf0]" />
+          </div>
+          <div className="mt-3.5 flex gap-1.5 text-[11px]">
+            {[
+              ["IMAGES", "75.8 MB"],
+              ["GIFS", "0.0 MB"],
+              ["VIDEOS", "53.4 MB"],
+            ].map(([label, value]) => (
+              <div key={label} className="flex-1 rounded-[10px] border border-[#2c2c2e] p-2">
+                <div className="text-[#8e8e93]">● {label}</div>
+                <div className="mt-0.5 font-bold">{value}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="mt-3 rounded-2xl border p-3.5 text-[13px]" style={{ borderColor: "rgba(255,107,74,0.35)", background: "rgba(255,107,74,0.06)" }}>
+          <div className="font-bold">Remove the Clip It watermark</div>
+          <div className="mt-0.5 text-[#8e8e93]">Unlimited exports, batch actions and more</div>
+        </div>
+      </div>
+
+      <div className="flex-[1_1_380px]">
+        <p className="text-[17px] font-semibold text-[#e8492b]">04 · 100% on your device</p>
+        <h2 className="mt-2 text-[clamp(36px,5vw,52px)] font-bold leading-[1.07] tracking-[-0.025em]">Your clips never leave your phone.</h2>
+        <ul className="mt-7 flex flex-col border-b border-apple-hairline">
+          {["No account required", "No cloud sync or upload", "No tracking", "Premium is billed through Google Play and can be canceled anytime"].map(
+            (item) => (
+              <li key={item} className="flex items-center gap-3.5 border-t border-apple-hairline py-4 text-[19px]">
+                {checkIcon}
+                {item}
+              </li>
+            ),
+          )}
+        </ul>
+        <p className="mt-5 text-[17px]">
+          <Link to="/clipit/privacy" className="text-apple-link hover:underline">
+            Read the privacy policy ›
+          </Link>
+        </p>
+      </div>
+    </div>
+  </section>
+);
+
+const ClipIt = () => (
+  <PageTransition>
+    <div className="min-h-screen bg-black text-[#f5f5f7]">
+      <GlobalNav dark />
+      <LocalNav
+        dark
+        name={app.name}
+        homeHref="/clipit"
+        icon={<AppIcon app={app} size={28} />}
+        links={[
+          { label: "Bubble", href: "#bubble" },
+          { label: "Flashback", href: "#flashback" },
+          { label: "Vault", href: "#vault" },
+          { label: "Privacy", href: "/clipit/privacy" },
+          { label: "Terms", href: "/clipit/terms" },
+        ]}
+        cta={{ label: "Get", href: app.storeUrl!, color: CORAL }}
+      />
+
+      <section className="px-[22px] pb-20 pt-24 text-center">
+        <AppIcon app={app} size={88} className="mx-auto" />
+        <p className="mt-[18px] text-[21px] font-semibold text-[#ff7a59]">Clip It · Android · 4.8★ on Google Play</p>
+        <h1 className="mx-auto mt-2.5 max-w-[900px] text-[clamp(52px,8vw,96px)] font-bold leading-[1.02] tracking-[-0.035em]">
+          Never miss a highlight.
+        </h1>
+        <p className="mx-auto mt-[22px] max-w-[620px] text-[21px] leading-[1.4] text-[#a1a1a6]">
+          Clip It keeps the last 15–60 seconds of your screen in a rolling buffer. Double-tap the bubble and that moment is saved,
+          even though you never hit record.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-7">
+          <PillLink href={app.storeUrl!} background={CORAL} external>
+            Get it on Google Play
+          </PillLink>
+          <a href="#bubble" className="text-[17px] text-apple-link-dark hover:underline">
+            See how it works ›
+          </a>
+        </div>
+      </section>
+
+      <section id="bubble" className="mx-auto max-w-[1120px] scroll-mt-14 px-[22px] pb-[140px] pt-10">
+        <p className="text-[17px] font-semibold text-[#ff7a59]">01 · The bubble</p>
+        <h2 className="mt-2 text-[clamp(36px,5vw,56px)] font-bold leading-[1.07] tracking-[-0.025em]">One button. Three gestures.</h2>
+        <p className="mt-3 max-w-[640px] text-[21px] leading-[1.4] text-[#a1a1a6]">
+          A small bubble floats over any app without flashing or covering your game. Try each gesture.
+        </p>
+        <BubbleDemo />
+      </section>
+
+      <FlashbackBuffer />
+      <Vault />
+      <StorageAndPrivacy />
+
+      <div className="text-apple-ink">
+        <StoreGallery
+          height={480}
+          images={[
+            { src: gameplay, alt: "Never miss a highlight" },
+            { src: shotDoubleTap, alt: "Double-tap. That's it." },
+            { src: shotVault, alt: "Every clip, automatically organized" },
+            { src: shotCollections, alt: "Collections" },
+            { src: shotStorage, alt: "Storage and settings" },
+          ]}
+        />
+        <div className="bg-white">
+          <BehindTheBuild appName="Clip It" stack="React Native · Expo · Reanimated · Zustand · RevenueCat · AdMob · On-device OCR">
+            <p>
+              Clip It is built with React Native and Expo. The capture bubble floats over other apps through Android's overlay
+              permission. The flashback buffer keeps a short rolling window of screen frames and only writes it to storage when you
+              double-tap. Everything lives in the app's local storage, with no cloud back end. Premium unlocks through RevenueCat on
+              top of Google Play Billing.
+            </p>
+          </BehindTheBuild>
+        </div>
+        <SiteFooter />
+      </div>
+    </div>
+  </PageTransition>
+);
 
 export default ClipIt;

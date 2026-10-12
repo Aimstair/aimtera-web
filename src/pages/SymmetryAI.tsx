@@ -1,27 +1,29 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Scan, Dumbbell, TrendingUp } from "lucide-react";
-import { Link } from "react-router-dom";
-import Navbar from "@/components/Navbar";
-import ScrollReveal from "@/components/ScrollReveal";
-import MagneticButton from "@/components/MagneticButton";
-import StickyWaitlistBar from "@/components/StickyWaitlistBar";
+import GlobalNav from "@/components/site/GlobalNav";
+import LocalNav from "@/components/site/LocalNav";
+import SiteFooter from "@/components/site/SiteFooter";
+import AppIcon from "@/components/site/AppIcon";
 import TurnstileWidget from "@/components/TurnstileWidget";
 import PageTransition from "@/components/PageTransition";
+import { BehindTheBuild } from "@/components/site/Section";
+import { getApp } from "@/content/apps";
 import heroPhone from "@/assets/symmetry-hero-phone.png";
 import muscleChart from "@/assets/symmetry-muscle-chart.png";
 import workoutImg from "@/assets/symmetry-workout.png";
 import graphImg from "@/assets/symmetry-graph.png";
 import { getWaitlistCount, submitWaitlist } from "@/lib/backendApi";
 
+const app = getApp("symmetryai");
+const CYAN = "#22d3ee";
+const SLATE = "#0f172a";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 interface WaitlistFormProps {
-  className?: string;
   isSignedUp: boolean;
   onSignedUp: () => void;
 }
 
-const WaitlistForm = ({ className = "", isSignedUp, onSignedUp }: WaitlistFormProps) => {
+const WaitlistForm = ({ isSignedUp, onSignedUp }: WaitlistFormProps) => {
   const [email, setEmail] = useState("");
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const [submissionState, setSubmissionState] = useState<"idle" | "submitting" | "error">("idle");
@@ -69,20 +71,20 @@ const WaitlistForm = ({ className = "", isSignedUp, onSignedUp }: WaitlistFormPr
       onSignedUp();
     } catch (error) {
       setSubmissionState("error");
-      setErrorMessage(
-        error instanceof Error ? error.message : "Something went wrong. Please try again.",
-      );
+      setErrorMessage(error instanceof Error ? error.message : "Something went wrong. Please try again.");
     }
   };
 
   if (isSignedUp) {
-    return <div className={className}><p className="text-symmetry-cyan font-semibold">🎉 You're on the list!</p></div>;
+    return <p className="text-[19px] font-semibold" style={{ color: CYAN }}>You're on the list. We'll be in touch.</p>;
   }
 
   return (
-    <form onSubmit={handleSubmit} className={`space-y-2 ${className}`}>
-      <div className="flex flex-col sm:flex-row gap-3">
+    <form onSubmit={handleSubmit} className="mx-auto max-w-[520px] space-y-2">
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <label htmlFor="symmetry-email" className="sr-only">Email address</label>
         <input
+          id="symmetry-email"
           type="email"
           required
           value={email}
@@ -95,29 +97,30 @@ const WaitlistForm = ({ className = "", isSignedUp, onSignedUp }: WaitlistFormPr
           }}
           placeholder="Enter your email"
           disabled={submissionState === "submitting"}
-          className="flex-1 bg-[hsl(220_30%_12%)] border border-symmetry-cyan/20 rounded-full px-6 py-3.5 text-lume-foreground placeholder:text-lume-foreground/30 focus:outline-none focus:border-symmetry-cyan/50 transition-colors"
+          className="min-h-12 flex-1 rounded-full border border-white/15 bg-white/5 px-6 text-[17px] text-white placeholder:text-white/40 focus:border-[#22d3ee] focus:outline-none"
         />
-        <MagneticButton
-          as="button"
+        <button
+          type="submit"
           disabled={submissionState === "submitting" || !captchaToken}
-          className="bg-gradient-to-r from-symmetry-cyan to-symmetry-purple text-primary-foreground font-semibold px-8 py-3.5 rounded-full hover:opacity-90 transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+          className="min-h-12 whitespace-nowrap rounded-full px-7 text-[17px] font-semibold text-[#0f172a] transition-opacity hover:opacity-90 disabled:opacity-60"
+          style={{ background: CYAN }}
         >
-          {submissionState === "submitting" ? "Joining..." : "Join Waitlist"} <ArrowRight className="w-4 h-4" />
-        </MagneticButton>
+          {submissionState === "submitting" ? "Joining..." : "Join Waitlist"}
+        </button>
       </div>
-      <TurnstileWidget
-        action="waitlist_submit"
-        onTokenChange={setCaptchaToken}
-      />
-      <p
-        aria-live="polite"
-        className={`text-sm min-h-5 break-words ${submissionState === "error" ? "text-destructive" : "text-transparent"}`}
-      >
+      <TurnstileWidget action="waitlist_submit" onTokenChange={setCaptchaToken} />
+      <p aria-live="polite" className={`min-h-5 break-words text-sm ${submissionState === "error" ? "text-red-400" : "text-transparent"}`}>
         {submissionState === "error" ? errorMessage : ""}
       </p>
     </form>
   );
 };
+
+const features = [
+  { eyebrow: "The scan", title: "AI muscle analysis", body: "Upload a photo and the AI maps your muscle development, highlighting overdeveloped and underdeveloped areas.", image: muscleChart, alt: "AI muscle analysis breakdown" },
+  { eyebrow: "The plan", title: "Tailored workouts", body: "Scan results turn into targeted routines that focus on your weakest areas.", image: workoutImg, alt: "Generated workout routine" },
+  { eyebrow: "The loop", title: "Track your balance", body: "Log workouts, rescan, and watch your symmetry improve over time.", image: graphImg, alt: "Muscle symmetry progress graph" },
+];
 
 const SymmetryAI = () => {
   const [isWaitlistSignedUp, setIsWaitlistSignedUp] = useState(false);
@@ -131,17 +134,11 @@ const SymmetryAI = () => {
       setIsCountLoading(true);
       try {
         const result = await getWaitlistCount("symmetryai");
-        if (isMounted) {
-          setWaitlistCount(result.count);
-        }
+        if (isMounted) setWaitlistCount(result.count);
       } catch {
-        if (isMounted) {
-          setWaitlistCount(null);
-        }
+        if (isMounted) setWaitlistCount(null);
       } finally {
-        if (isMounted) {
-          setIsCountLoading(false);
-        }
+        if (isMounted) setIsCountLoading(false);
       }
     };
 
@@ -167,129 +164,70 @@ const SymmetryAI = () => {
       ? `${waitlistCount.toLocaleString()} ${waitlistCount === 1 ? "person" : "people"} currently on the waitlist.`
       : "Live waitlist count is temporarily unavailable.";
 
-  const features = [
-    { icon: Scan, title: "AI Muscle Analysis", subtitle: "The Scan", description: "Upload a photo and our AI instantly maps your muscle development. Identify overdeveloped and underdeveloped areas with precision imaging.", image: muscleChart, imgAlt: "AI muscle analysis breakdown" },
-    { icon: Dumbbell, title: "Tailored Workout Generation", subtitle: "The Plan", description: "Based on your scan results, SymmetryAI generates hyper-targeted workout routines that focus on your weakest areas. No guesswork, just science.", image: workoutImg, imgAlt: "Generated workout routine" },
-    { icon: TrendingUp, title: "The Evolutionary Loop", subtitle: "Track Progress", description: "Log your workouts, rescan, and watch your symmetry improve over time. Beautiful data visualization tracks your journey to perfect balance.", image: graphImg, imgAlt: "Muscle symmetry progress graph" },
-  ];
-
   return (
     <PageTransition>
-      <div className="min-h-screen bg-symmetry-gradient">
-        <Navbar />
-        <StickyWaitlistBar
-          product="symmetry"
-          isSignedUp={isWaitlistSignedUp}
-          onSignedUp={handleWaitlistSignedUp}
+      <div className="min-h-screen bg-white text-apple-ink">
+        <GlobalNav dark />
+        <LocalNav
+          dark
+          name={app.name}
+          homeHref="/symmetryai"
+          icon={<AppIcon app={app} size={28} />}
+          links={[
+            { label: "How it works", href: "#features" },
+            { label: "Waitlist", href: "#waitlist" },
+          ]}
         />
 
-        {/* Hero */}
-        <section className="pt-16 min-h-screen flex items-center relative overflow-hidden">
-          <div className="container mx-auto px-6 py-24">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <ScrollReveal>
-                  <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 rounded-full" style={{ background: "hsl(var(--symmetry-cyan) / 0.15)", border: "1px solid hsl(var(--symmetry-cyan) / 0.3)" }}>
-                    <span className="text-xs font-bold text-symmetry-cyan">IN DEVELOPMENT</span>
-                  </div>
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-lume-foreground mb-6 leading-tight">
-                    Your Body,<br /><span className="text-gradient-symmetry">Decoded.</span>
-                  </h1>
-                  <p className="text-lume-foreground/60 text-lg mb-8 max-w-lg leading-relaxed">
-                    AI-powered muscle analysis and personalized workout generation. Scan, analyze, and train smarter than ever before.
-                  </p>
-                </ScrollReveal>
-                <ScrollReveal delay={200}>
-                  <WaitlistForm
-                    className="max-w-lg"
-                    isSignedUp={isWaitlistSignedUp}
-                    onSignedUp={handleWaitlistSignedUp}
-                  />
-                  <p className="max-w-lg mt-2 text-xs text-lume-foreground/50" aria-live="polite">
-                    {waitlistCountText}
-                  </p>
-                </ScrollReveal>
-              </div>
-              <ScrollReveal delay={300} direction="right">
-                <div className="hidden lg:flex justify-center relative">
-                  <div className="relative">
-                    <img src={heroPhone} alt="SymmetryAI body scan" className="w-72 drop-shadow-2xl relative z-10" width={800} height={1024} />
-                    <div className="absolute left-0 right-0 h-1 z-20 animate-scan scan-line" style={{ filter: "blur(2px)" }} />
-                    <div className="absolute inset-0 -z-10 blur-3xl opacity-30">
-                      <div className="w-full h-full bg-gradient-to-b from-symmetry-cyan/50 to-symmetry-purple/50 rounded-full" />
-                    </div>
-                  </div>
+        <section className="overflow-hidden px-[22px] pt-24 text-center text-[#f5f5f7]" style={{ background: SLATE }}>
+          <p className="text-[21px] font-semibold" style={{ color: CYAN }}>SymmetryAI · Mobile · In development</p>
+          <h1 className="mx-auto mt-2.5 max-w-[900px] text-[clamp(52px,8vw,96px)] font-bold leading-[1.02] tracking-[-0.035em]">Your body, decoded.</h1>
+          <p className="mx-auto mt-[22px] max-w-[620px] text-[21px] leading-[1.4] text-[#94a3b8]">
+            AI-guided muscle balance and training insights. Scan, train the weak side, and rescan to watch the gap close.
+          </p>
+          <div className="mt-8">
+            <a href="#waitlist" className="inline-flex min-h-11 items-center rounded-full px-6 text-[17px] font-semibold text-[#0f172a]" style={{ background: CYAN }}>
+              Join the waitlist
+            </a>
+          </div>
+          <img src={heroPhone} alt="SymmetryAI concept on a phone" className="mx-auto mt-14 h-[420px] w-auto max-w-full object-cover object-top" />
+        </section>
+
+        <section id="features" className="mx-auto max-w-[1080px] scroll-mt-14 px-[22px] py-[140px]">
+          <h2 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.07] tracking-[-0.025em]">Scan. Train. Rescan.</h2>
+          <div className="mt-14 flex flex-col gap-20">
+            {features.map((feature, i) => (
+              <div key={feature.title} className={`flex flex-wrap items-center gap-12 ${i % 2 ? "flex-row-reverse" : ""}`}>
+                <div className="flex-[1_1_340px]">
+                  <p className="text-[17px] font-semibold text-[#0891b2]">0{i + 1} · {feature.eyebrow}</p>
+                  <h3 className="mt-2 text-[36px] font-bold leading-[1.1] tracking-[-0.02em]">{feature.title}</h3>
+                  <p className="mt-3 text-[19px] leading-[1.47] text-apple-secondary">{feature.body}</p>
                 </div>
-              </ScrollReveal>
-            </div>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section id="features" className="py-24">
-          <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground text-center mb-4">How It Works</h2>
-              <p className="text-lume-foreground/50 text-center mb-20 max-w-lg mx-auto">Three steps to symmetrical, science-backed training.</p>
-            </ScrollReveal>
-            <div className="space-y-32 max-w-5xl mx-auto">
-              {features.map((f, i) => (
-                <ScrollReveal key={f.title} delay={100}>
-                  <div className={`flex flex-col ${i % 2 === 0 ? "lg:flex-row" : "lg:flex-row-reverse"} gap-12 lg:gap-20 items-center`}>
-                    <div className="flex-1">
-                      <div className="w-10 h-10 rounded-lg bg-symmetry-cyan/10 flex items-center justify-center mb-4"><f.icon className="w-5 h-5 text-symmetry-cyan" /></div>
-                      <p className="text-symmetry-cyan text-xs font-semibold tracking-widest uppercase mb-2">{f.subtitle}</p>
-                      <h3 className="text-2xl md:text-3xl font-bold text-lume-foreground mb-4">{f.title}</h3>
-                      <p className="text-lume-foreground/60 leading-relaxed">{f.description}</p>
-                    </div>
-                    <div className="flex-1">
-                      <div className="rounded-2xl overflow-hidden glow-symmetry">
-                        <img src={f.image} alt={f.imgAlt} className="w-full" loading="lazy" width={800} height={800} />
-                      </div>
-                    </div>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section id="waitlist" className="py-24 relative">
-          <div className="absolute inset-0 bg-gradient-to-t from-symmetry-bg via-[hsl(240_25%_10%)] to-symmetry-bg" />
-          <div className="relative container mx-auto px-6 text-center">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground mb-4">Ready to Get Balanced?</h2>
-              <p className="text-lume-foreground/50 mb-10 max-w-md mx-auto">Join the beta and be among the first to train with AI precision.</p>
-              <WaitlistForm
-                className="max-w-lg mx-auto"
-                isSignedUp={isWaitlistSignedUp}
-                onSignedUp={handleWaitlistSignedUp}
-              />
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* Footer */}
-        <footer className="border-t border-symmetry-cyan/10 py-12 bg-symmetry-bg">
-          <div className="container mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-              <div>
-                <h3 className="text-lg font-bold text-gradient-symmetry mb-2">SymmetryAI</h3>
-                <p className="text-lume-foreground/30 text-xs">By Aimtera Labs</p>
+                <div className="flex-[1_1_380px] overflow-hidden rounded-[28px]" style={{ background: SLATE }}>
+                  <img src={feature.image} alt={feature.alt} loading="lazy" className="block h-[320px] w-full object-cover" />
+                </div>
               </div>
-              <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-                <Link to="/privacy" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Privacy Policy</Link>
-                <Link to="/terms" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Terms of Service</Link>
-                <Link to="/account-deletion" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Account Deletion</Link>
-                <a href="mailto:support@aimteralabs.com" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Support</a>
-              </div>
-            </div>
-            <div className="mt-8 pt-6 border-t border-symmetry-cyan/5">
-              <p className="text-lume-foreground/20 text-xs">&copy; {new Date().getFullYear()} Aimtera Labs. All rights reserved.</p>
+            ))}
+          </div>
+        </section>
+
+        <section id="waitlist" className="scroll-mt-14 px-3 pb-3">
+          <div className="rounded-[28px] px-6 py-24 text-center text-[#f5f5f7]" style={{ background: SLATE }}>
+            <h2 className="text-[clamp(36px,5vw,56px)] font-bold leading-[1.07] tracking-[-0.025em]">Be first to try it.</h2>
+            <p className="mx-auto mt-3 max-w-[520px] text-[19px] text-[#94a3b8]" aria-live="polite">{waitlistCountText}</p>
+            <div className="mt-8">
+              <WaitlistForm isSignedUp={isWaitlistSignedUp} onSignedUp={handleWaitlistSignedUp} />
             </div>
           </div>
-        </footer>
+        </section>
+
+        <BehindTheBuild appName="SymmetryAI" stack="React Native · Expo Router · Expo Camera · Supabase · NativeWind · Gifted Charts">
+          <p>
+            SymmetryAI is a React Native app in active development. The camera captures progress photos, Supabase stores scans and
+            workout history, and charts show how muscle balance changes between scans.
+          </p>
+        </BehindTheBuild>
+        <SiteFooter />
       </div>
     </PageTransition>
   );

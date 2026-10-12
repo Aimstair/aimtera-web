@@ -1,8 +1,7 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
-import Navbar from "@/components/Navbar";
+import GlobalNav from "@/components/site/GlobalNav";
 import PageTransition from "@/components/PageTransition";
 import ScrollReveal from "@/components/ScrollReveal";
-import MagneticButton from "@/components/MagneticButton";
 import {
   getAdminReports,
   updateAdminDeletionStatus,
@@ -160,7 +159,7 @@ const AdminReports = () => {
   return (
     <PageTransition>
       <div className="min-h-screen" style={{ background: "hsl(var(--corp-dark-bg))" }}>
-        <Navbar />
+        <GlobalNav dark sticky />
         <main className="pt-24 pb-16">
           <div className="container mx-auto px-6 max-w-6xl">
             <ScrollReveal>
@@ -201,8 +200,7 @@ const AdminReports = () => {
                       color: "hsl(var(--corp-dark-foreground))",
                     }}
                   />
-                  <MagneticButton
-                    as="button"
+                  <button
                     disabled={authStatus === "sending-link"}
                     className="px-6 py-3 rounded-full text-sm font-semibold"
                     style={{
@@ -211,7 +209,7 @@ const AdminReports = () => {
                     }}
                   >
                     {authStatus === "sending-link" ? "Sending..." : "Send Magic Link"}
-                  </MagneticButton>
+                  </button>
                   {authMessage && (
                     <p className={`text-sm ${authStatus === "error" ? "text-destructive" : "text-emerald-300"}`}>
                       {authMessage}
@@ -244,8 +242,7 @@ const AdminReports = () => {
                     />
                   </div>
                   <div className="flex items-center gap-3">
-                    <MagneticButton
-                      as="button"
+                    <button
                       onClick={() => {
                         void loadReports();
                       }}
@@ -257,9 +254,8 @@ const AdminReports = () => {
                       }}
                     >
                       {isLoadingReports ? "Refreshing..." : "Refresh Reports"}
-                    </MagneticButton>
-                    <MagneticButton
-                      as="button"
+                    </button>
+                    <button
                       onClick={handleSignOut}
                       className="px-5 py-2.5 rounded-full text-sm font-semibold border"
                       style={{
@@ -268,7 +264,7 @@ const AdminReports = () => {
                       }}
                     >
                       Sign Out
-                    </MagneticButton>
+                    </button>
                   </div>
                 </div>
 
@@ -333,8 +329,7 @@ const AdminReports = () => {
                             </p>
                           </div>
                           <div className="flex flex-wrap gap-2">
-                            <MagneticButton
-                              as="button"
+                            <button
                               disabled={isMutating}
                               onClick={() => {
                                 void updateStatus(requestItem.id, "pending");
@@ -343,9 +338,8 @@ const AdminReports = () => {
                               style={{ borderColor: "hsl(0 0% 100% / 0.2)", color: "hsl(var(--corp-dark-foreground))" }}
                             >
                               Mark Pending
-                            </MagneticButton>
-                            <MagneticButton
-                              as="button"
+                            </button>
+                            <button
                               disabled={isMutating}
                               onClick={() => {
                                 void updateStatus(requestItem.id, "processed");
@@ -354,9 +348,8 @@ const AdminReports = () => {
                               style={{ background: "hsl(160 70% 40%)", color: "white" }}
                             >
                               Mark Processed
-                            </MagneticButton>
-                            <MagneticButton
-                              as="button"
+                            </button>
+                            <button
                               disabled={isMutating}
                               onClick={() => {
                                 void updateStatus(requestItem.id, "rejected");
@@ -365,7 +358,7 @@ const AdminReports = () => {
                               style={{ background: "hsl(var(--destructive))", color: "hsl(var(--destructive-foreground))" }}
                             >
                               Mark Rejected
-                            </MagneticButton>
+                            </button>
                           </div>
                         </div>
                         <p className="text-xs mt-2" style={{ color: "hsl(var(--corp-dark-muted))" }}>

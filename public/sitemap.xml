@@ -11,11 +11,6 @@
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://www.aimteralabs.com/lume</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
     <loc>https://www.aimteralabs.com/symmetryai</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
@@ -74,5 +69,15 @@
     <loc>https://www.aimteralabs.com/clipit/terms</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.aimteralabs.com/speedspell</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.aimteralabs.com/maisoncarte</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
 </urlset>

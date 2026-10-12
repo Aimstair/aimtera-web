@@ -1,18 +1,15 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatePresence } from "framer-motion";
-import { Suspense, lazy, useCallback, useEffect, useRef, useState } from "react";
-import CustomCursor from "@/components/CustomCursor";
-import ChatbotWidget from "./components/ChatbotWidget";
+import { Suspense, lazy, useCallback, useEffect, useRef } from "react";
 import { setupGlobalErrorMonitoring } from "@/lib/monitoring";
 
 const queryClient = new QueryClient();
 
 const Index = lazy(() => import("./pages/Index.tsx"));
-const Lume = lazy(() => import("./pages/Lume.tsx"));
 const SymmetryAI = lazy(() => import("./pages/SymmetryAI.tsx"));
 const RBMarket = lazy(() => import("./pages/RBMarket.tsx"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy.tsx"));
@@ -20,6 +17,8 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService.tsx"));
 const AccountDeletion = lazy(() => import("./pages/AccountDeletion.tsx"));
 const AdminReports = lazy(() => import("./pages/AdminReports.tsx"));
 const SpeedMath = lazy(() => import("./pages/SpeedMath.tsx"));
+const SpeedSpell = lazy(() => import("./pages/SpeedSpell.tsx"));
+const MaisonCarte = lazy(() => import("./pages/MaisonCarte.tsx"));
 const SpeedMathPrivacy = lazy(() => import("./pages/SpeedMathPrivacy.tsx"));
 const Test4Test = lazy(() => import("./pages/Test4Test.tsx"));
 const Test4TestPrivacy = lazy(() => import("./pages/Test4TestPrivacy.tsx"));
@@ -54,22 +53,26 @@ const withAbsoluteUrl = (path: string) => {
 
 const routeMetadata: Record<string, RouteMetadata> = {
   "/": {
-    title: "Aimtera Labs",
-    description: "Aimtera Labs builds RBMarket, Lume, and SymmetryAI.",
+    title: "Eric Mar Geonzon — Developer",
+    description:
+      "Eric Mar Geonzon builds mobile apps, web platforms and automations. Creator of Clip It, Speed Math, Speed Spell, Test4Test, RBMarket and Maison Carte.",
     canonicalPath: "/",
     pageName: "Home",
     ogType: "website",
     ogImagePath: "/logo.png",
     twitterCard: "summary_large_image",
     schema: {
-      "@type": "WebSite",
-      name: "Aimtera Labs",
+      "@type": "ProfilePage",
+      name: "Eric Mar Geonzon — Developer",
       url: SEO_SITE_URL,
-      description: "Aimtera Labs builds RBMarket, Lume, and SymmetryAI.",
-      publisher: {
-        "@type": "Organization",
-        name: "Aimtera Labs",
+      mainEntity: {
+        "@type": "Person",
+        name: "Eric Mar Geonzon",
+        jobTitle: "Developer",
         url: SEO_SITE_URL,
+        sameAs: ["https://github.com/Aimstair", "https://www.linkedin.com/in/eric-mar-geonzon"],
+        alumniOf: { "@type": "CollegeOrUniversity", name: "University of San Jose–Recoletos" },
+        worksFor: { "@type": "Organization", name: "Aimtera Labs", url: SEO_SITE_URL },
       },
     },
   },
@@ -89,29 +92,6 @@ const routeMetadata: Record<string, RouteMetadata> = {
       url: `${SEO_SITE_URL}/rbmarket`,
       description: "RBMarket is Aimtera's peer-to-peer Roblox item marketplace.",
       image: `${SEO_SITE_URL}/og-rbmarket.png`,
-      publisher: {
-        "@type": "Organization",
-        name: "Aimtera Labs",
-        url: SEO_SITE_URL,
-      },
-    },
-  },
-  "/lume": {
-    title: "Lume | Aimtera Labs",
-    description: "Lume is a proximity-first social messaging experience.",
-    canonicalPath: "/lume",
-    pageName: "Lume",
-    ogType: "website",
-    ogImagePath: "/og-lume.png",
-    twitterCard: "summary_large_image",
-    schema: {
-      "@type": "SoftwareApplication",
-      name: "Lume",
-      applicationCategory: "SocialNetworkingApplication",
-      operatingSystem: "Web",
-      url: `${SEO_SITE_URL}/lume`,
-      description: "Lume is a proximity-first social messaging experience.",
-      image: `${SEO_SITE_URL}/og-lume.png`,
       publisher: {
         "@type": "Organization",
         name: "Aimtera Labs",
@@ -154,7 +134,7 @@ const routeMetadata: Record<string, RouteMetadata> = {
       "@type": "SoftwareApplication",
       name: "Speed Math",
       applicationCategory: "GameApplication",
-      operatingSystem: "Web",
+      operatingSystem: "Android",
       url: `${SEO_SITE_URL}/speedmath`,
       description: "Master math at lightning speed with Speed Math.",
       publisher: {
@@ -162,6 +142,46 @@ const routeMetadata: Record<string, RouteMetadata> = {
         name: "Aimtera Labs",
         url: SEO_SITE_URL,
       },
+    },
+  },
+  "/speedspell": {
+    title: "Speed Spell | Aimtera Labs",
+    description: "Speed Spell is a spelling bee trainer with 2,000+ words, six game modes and a Linguistic ELO rating.",
+    canonicalPath: "/speedspell",
+    pageName: "Speed Spell",
+    ogType: "website",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary_large_image",
+    schema: {
+      "@type": "SoftwareApplication",
+      name: "Speed Spell",
+      applicationCategory: "GameApplication",
+      operatingSystem: "Android",
+      url: `${SEO_SITE_URL}/speedspell`,
+      description: "Speed Spell is a spelling bee trainer with 2,000+ words, six game modes and a Linguistic ELO rating.",
+      publisher: {
+        "@type": "Organization",
+        name: "Aimtera Labs",
+        url: SEO_SITE_URL,
+      },
+    },
+  },
+  "/maisoncarte": {
+    title: "Maison Carte | Eric Mar Geonzon",
+    description: "Maison Carte sends interactive greeting cards as small websites, sealed in wax and shared as one private link.",
+    canonicalPath: "/maisoncarte",
+    pageName: "Maison Carte",
+    ogType: "website",
+    ogImagePath: "/logo.png",
+    twitterCard: "summary_large_image",
+    schema: {
+      "@type": "WebApplication",
+      name: "Maison Carte",
+      applicationCategory: "LifestyleApplication",
+      operatingSystem: "Web",
+      url: "https://maisoncarte.app",
+      description: "Interactive greeting cards delivered as micro-websites.",
+      author: { "@type": "Person", name: "Eric Mar Geonzon" },
     },
   },
   "/speedmath/privacy": {
@@ -410,7 +430,7 @@ const buildBreadcrumbSchema = (metadata: RouteMetadata, canonicalUrl: string) =>
     {
       "@type": "ListItem",
       position: 1,
-      name: "Aimtera Labs",
+      name: "Eric Mar Geonzon",
       item: SEO_SITE_URL,
     },
   ];
@@ -431,51 +451,12 @@ const buildBreadcrumbSchema = (metadata: RouteMetadata, canonicalUrl: string) =>
   };
 };
 
-const RouteLoadingFallback = () => {
-  const loadingSteps = [
-    "Preparing your experience",
-    "Optimizing visuals and interactions",
-    "Finalizing route transition",
-  ];
-  const [stepIndex, setStepIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = window.setInterval(() => {
-      setStepIndex((current) => (current + 1) % loadingSteps.length);
-    }, 1100);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [loadingSteps.length]);
-
-  return (
-    <div className="min-h-screen w-full flex items-center justify-center px-6" role="status" aria-live="polite">
-      <div className="w-full max-w-sm rounded-2xl border border-border/70 bg-background/95 backdrop-blur-sm p-6 shadow-lg">
-        <div className="flex items-center gap-4">
-          <div className="relative h-12 w-12 shrink-0">
-            <div className="absolute inset-0 rounded-full border-2 border-muted" />
-            <div className="absolute inset-0 rounded-full border-2 border-primary border-t-transparent animate-spin" />
-          </div>
-          <div className="space-y-2">
-            <p className="text-sm font-semibold text-foreground">Loading Aimtera Labs</p>
-            <p className="text-xs text-muted-foreground">{loadingSteps[stepIndex]}</p>
-          </div>
-        </div>
-
-        <div className="mt-5 h-1.5 rounded-full bg-muted overflow-hidden">
-          <div className="h-full w-1/2 rounded-full bg-primary animate-pulse" />
-        </div>
-
-        <div className="mt-4 flex gap-2" aria-hidden="true">
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" />
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:120ms]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:240ms]" />
-        </div>
-      </div>
-    </div>
-  );
-};
+const RouteLoadingFallback = () => (
+  <div className="flex min-h-screen w-full items-center justify-center bg-white" role="status" aria-live="polite">
+    <span className="h-6 w-6 animate-spin rounded-full border-2 border-apple-hairline border-t-apple-ink" />
+    <span className="sr-only">Loading</span>
+  </div>
+);
 
 const AnimatedRoutes = () => {
   const location = useLocation();
@@ -488,7 +469,7 @@ const AnimatedRoutes = () => {
     const originalScrollRestoration = window.history.scrollRestoration;
     window.history.scrollRestoration = "manual";
 
-    if (initialPathRef.current !== "/") {
+    if (initialPathRef.current !== "/" && !window.location.hash) {
       window.scrollTo({ top: 0, behavior: "auto" });
     }
 
@@ -525,7 +506,7 @@ const AnimatedRoutes = () => {
 
     document.title = metadata.title;
     upsertMeta("name", "description", metadata.description);
-    upsertMeta("property", "og:site_name", "Aimtera Labs");
+    upsertMeta("property", "og:site_name", "Eric Mar Geonzon");
     upsertMeta("property", "og:title", metadata.title);
     upsertMeta("property", "og:description", metadata.description);
     upsertMeta("property", "og:type", metadata.ogType);
@@ -554,11 +535,31 @@ const AnimatedRoutes = () => {
     upsertCanonical(canonicalUrl);
   }, [location.pathname]);
 
+  // Scroll to "#section" targets once the lazily loaded page has rendered them.
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = decodeURIComponent(location.hash.slice(1));
+    let attempts = 0;
+    const timer = window.setInterval(() => {
+      const target = document.getElementById(id);
+      attempts += 1;
+      if (target) {
+        window.clearInterval(timer);
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else if (attempts > 40) {
+        window.clearInterval(timer);
+      }
+    }, 50);
+    return () => window.clearInterval(timer);
+  }, [location.pathname, location.hash]);
+
   const restorePendingScrollPosition = useCallback(() => {
     const targetPath = pendingRestorePathRef.current;
     if (!targetPath) return;
 
     pendingRestorePathRef.current = null;
+
+    if (window.location.hash) return;
 
     const savedPosition = scrollPositionsRef.current[targetPath];
 
@@ -579,10 +580,12 @@ const AnimatedRoutes = () => {
       <Suspense fallback={<RouteLoadingFallback />}>
         <Routes location={location} key={location.pathname}>
           <Route path="/" element={<Index />} />
-          <Route path="/lume" element={<Lume />} />
+          <Route path="/lume" element={<Navigate to="/" replace />} />
           <Route path="/symmetryai" element={<SymmetryAI />} />
           <Route path="/rbmarket" element={<RBMarket />} />
           <Route path="/speedmath" element={<SpeedMath />} />
+          <Route path="/speedspell" element={<SpeedSpell />} />
+          <Route path="/maisoncarte" element={<MaisonCarte />} />
           <Route path="/speedmath/privacy" element={<SpeedMathPrivacy />} />
           <Route path="/test4test" element={<Test4Test />} />
           <Route path="/test4test/privacy" element={<Test4TestPrivacy />} />
@@ -609,7 +612,6 @@ const AppShell = () => {
   return (
     <BrowserRouter>
       <AnimatedRoutes />
-      <ChatbotWidget />
     </BrowserRouter>
   );
 };
@@ -617,7 +619,6 @@ const AppShell = () => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <CustomCursor />
       <Toaster />
       <Sonner />
       <AppShell />

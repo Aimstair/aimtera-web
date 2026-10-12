@@ -41,13 +41,13 @@
 Check these routes:
 
 1. `/`
-2. `/lume`
-3. `/symmetryai`
-4. `/account-deletion`
+2. `/symmetryai`
+3. `/account-deletion`
+4. Every Google Play policy URL: `/privacy`, `/terms`, `/speedmath/privacy`, `/test4test/privacy`, `/test4test/account-deletion`, `/clipit/privacy`, `/clipit/terms`
 
 Check at least one function endpoint:
 
-1. `get-waitlist-count` for product `lume`
+1. `get-waitlist-count` for product `symmetryai`
 
 ## Rollback Procedure
 

@@ -1,312 +1,357 @@
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Shield, Users, TrendingUp, Star, ExternalLink } from "lucide-react";
-import Navbar from "@/components/Navbar";
-import ScrollReveal from "@/components/ScrollReveal";
-import MagneticButton from "@/components/MagneticButton";
+import { useState } from "react";
+import GlobalNav from "@/components/site/GlobalNav";
+import LocalNav from "@/components/site/LocalNav";
+import SiteFooter from "@/components/site/SiteFooter";
+import AppIcon from "@/components/site/AppIcon";
 import PageTransition from "@/components/PageTransition";
-import heroLaptop from "@/assets/rbmarket-hero-laptop.png";
-import chatImg from "@/assets/rbmarket-chat.png";
-import profileImg from "@/assets/rbmarket-profile.png";
-import { Link } from "react-router-dom";
+import { BehindTheBuild, PillLink } from "@/components/site/Section";
+import { getApp } from "@/content/apps";
 
-const CountUpNumber = ({ target, suffix = "" }: { target: number; suffix?: string }) => {
-  const [count, setCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
-  const hasAnimated = useRef(false);
+const app = getApp("rbmarket");
+const BLUE = "#006fd7";
+const GREEN = "#63b55b";
+const SITE_URL = app.siteUrl!;
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting && !hasAnimated.current) {
-        hasAnimated.current = true;
-        const duration = 2000;
-        const start = performance.now();
-        const animate = (now: number) => {
-          const elapsed = now - start;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = 1 - Math.pow(1 - progress, 3);
-          setCount(Math.floor(eased * target));
-          if (progress < 1) requestAnimationFrame(animate);
-        };
-        requestAnimationFrame(animate);
-      }
-    }, { threshold: 0.5 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [target]);
+const listings = [
+  { title: "SWEET SET BUNDLE MM2 GODLY CHEAP!", game: "Murder Mystery 2", price: "1,355", seller: "breakingbad", views: 62, bg: "from-[#fde68a] to-[#fca5a5]", vouches: 0 },
+  { title: "CELESTIAL KNIFE MM2 GODLY CHEAP", game: "Murder Mystery 2", price: "1,993", seller: "breakingbad", views: 56, bg: "from-[#c7d2fe] to-[#a5f3fc]", vouches: 0 },
+  { title: "NM Headless Horseman - 61kg", game: "Grow a Garden", price: "2,000", seller: "angel", views: 22, bg: "from-[#fed7aa] to-[#d9f99d]", vouches: 1 },
+  { title: "Nightmare Peacock - 101.96kg", game: "Grow a Garden", price: "350", seller: "aimstair", views: 21, bg: "from-[#bbf7d0] to-[#bfdbfe]", vouches: 1 },
+];
 
-  return <span ref={ref}>{count.toLocaleString()}{suffix}</span>;
-};
+const trends: Array<[string, number]> = [
+  ["Murder Mystery 2", 11],
+  ["Steal a Brainrot", 8],
+  ["Grow a Garden", 6],
+  ["Roblox", 3],
+  ["Blox Fruits", 1],
+  ["Pet Simulator 99", 1],
+];
 
-const FloatingVouch = ({ name, text, delay }: { name: string; text: string; delay: number }) => {
-  const [visible, setVisible] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+const tradeSteps = [
+  { title: "Find an item", body: "Browse listings by game, or search for a pet, item or unit. Every listing shows its price, its seller and how many people viewed it." },
+  { title: "Message the seller", body: "Each listing has a Message button that opens a real-time chat. Buyer and seller agree on the details themselves." },
+  { title: "Pay your way", body: "The two traders pick the method: GCash, PayPal, Robux or a cross-trade. RBMarket takes no cut." },
+  { title: "Leave a vouch", body: "After the trade, the buyer vouches for the seller. Vouches build reputation and push trusted sellers up the rankings." },
+];
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => setVisible(true), delay);
-      }
-    }, { threshold: 0.3 });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [delay]);
+const BrowserChrome = ({ url }: { url?: string }) => (
+  <div className="flex h-9 items-center gap-[7px] bg-[#f0f0f2] px-3.5" aria-hidden="true">
+    <span className="h-[11px] w-[11px] rounded-full bg-[#ff5f57]" />
+    <span className="h-[11px] w-[11px] rounded-full bg-[#febc2e]" />
+    <span className="h-[11px] w-[11px] rounded-full bg-[#28c840]" />
+    {url && <span className="ml-4 max-w-[360px] flex-1 rounded-md bg-white px-2.5 py-[3px] text-xs text-[#747474]">{url}</span>}
+  </div>
+);
 
-  return (
-    <div
-      ref={ref}
-      className="rounded-xl p-4 border transition-all duration-700"
-      style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0) scale(1)" : "translateY(20px) scale(0.95)",
-        background: "hsl(var(--rbmarket-surface))",
-        borderColor: "hsl(var(--rbmarket-accent) / 0.15)",
-      }}
-    >
-      <div className="flex items-center gap-1 mb-2">
-        {[...Array(5)].map((_, i) => (
-          <Star key={i} className="w-3 h-3 fill-current text-rbmarket-accent" />
+const SiteReplica = () => (
+  <div className="mx-auto mt-16 max-w-[1040px] overflow-hidden rounded-t-2xl border border-b-0 border-[#e4e4e4] bg-[#fdfdfd] text-left text-[#0d0d0d] shadow-[0_-10px_60px_rgba(0,0,0,0.06)]">
+    <BrowserChrome url="rbmarket.app" />
+    <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#e4e4e4] px-7 py-3.5">
+      <span className="text-lg font-extrabold" style={{ color: BLUE }}>RBMarket</span>
+      <span className="hidden flex-wrap gap-[22px] text-sm text-[#747474] sm:flex">
+        <span>Marketplace</span>
+        <span>Currency</span>
+        <span>Hall of Shame</span>
+        <span>Trends</span>
+      </span>
+      <span className="flex items-center gap-2.5 text-sm">
+        <span>Login</span>
+        <span className="rounded-[10px] px-3.5 py-[7px] text-[#f8f8f8]" style={{ background: BLUE }}>Sign Up</span>
+      </span>
+    </div>
+    <div className="px-7 pb-7 pt-10" style={{ background: "linear-gradient(135deg, rgba(0,111,215,0.10), rgba(0,111,215,0.02))" }}>
+      <div className="max-w-[560px] text-[clamp(24px,3vw,34px)] font-extrabold tracking-[-0.02em]">Trade In-Game Items Safely &amp; Anonymously</div>
+      <div className="mt-2 text-[15px] text-[#747474]">Connect with buyers and sellers in the gaming community. No hidden fees, just trusted trading.</div>
+      <div className="mt-4 flex gap-2.5 text-sm">
+        <span className="rounded-[10px] px-4 py-[9px] text-[#f8f8f8]" style={{ background: BLUE }}>Browse Items</span>
+        <span className="rounded-[10px] border border-[#e4e4e4] bg-white px-4 py-[9px]">Start Selling</span>
+      </div>
+    </div>
+    <div className="px-7 pb-8 pt-6">
+      <div className="text-lg font-bold">Featured Listings</div>
+      <div className="mt-3 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {listings.map((item) => (
+          <div key={item.title} className="overflow-hidden rounded-[10px] border border-[#e4e4e4] bg-white">
+            <div className={`relative h-24 bg-gradient-to-br ${item.bg}`}>
+              <span className="absolute left-2 top-2 rounded-md bg-black/55 px-1.5 py-0.5 text-[11px] text-white">{item.views} views</span>
+            </div>
+            <div className="px-3 py-2.5">
+              <div className="truncate text-[13px] font-bold">{item.title}</div>
+              <div className="text-xs text-[#747474]">{item.game}</div>
+              <div className="mt-1.5 flex items-center justify-between">
+                <span className="text-[15px] font-extrabold" style={{ color: BLUE }}>₱{item.price}</span>
+                <span className="text-xs text-[#747474]">{item.seller}</span>
+              </div>
+            </div>
+          </div>
         ))}
       </div>
-      <p className="text-sm mb-2" style={{ color: "hsl(var(--lume-foreground) / 0.7)" }}>"{text}"</p>
-      <p className="text-xs font-semibold" style={{ color: "hsl(var(--rbmarket-accent))" }}>{name}</p>
     </div>
+  </div>
+);
+
+const TradeFlow = () => {
+  const [step, setStep] = useState(0);
+  const [game, setGame] = useState("All");
+  const [picked, setPicked] = useState(1);
+  const [payment, setPayment] = useState("GCash");
+  const [vouched, setVouched] = useState(false);
+  const item = listings[picked];
+  const results = listings.map((l, i) => ({ ...l, i })).filter((l) => game === "All" || l.game === game);
+
+  return (
+    <section id="trade" className="mx-auto max-w-[1080px] scroll-mt-14 px-[22px] py-[140px]">
+      <p className="text-[17px] font-semibold" style={{ color: BLUE }}>01 · The trade flow</p>
+      <h2 className="mt-2 text-[clamp(36px,5vw,56px)] font-bold leading-[1.07] tracking-[-0.025em]">From listing to vouch in four steps.</h2>
+
+      <div role="tablist" aria-label="Trade steps" className="mt-10 grid grid-cols-2 border-b border-apple-hairline sm:grid-cols-4">
+        {tradeSteps.map((s, i) => {
+          const on = i === step;
+          return (
+            <button
+              key={s.title}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              aria-controls="trade-panel"
+              onClick={() => setStep(i)}
+              className={`px-2 pb-4 pt-3.5 text-left transition-opacity ${on ? "" : "opacity-55 hover:opacity-90"}`}
+              style={on ? { boxShadow: `inset 0 -3px 0 ${BLUE}` } : undefined}
+            >
+              <span className="block text-[13px] text-apple-secondary">Step {i + 1}</span>
+              <span className="mt-0.5 block text-[17px] font-semibold">{s.title}</span>
+            </button>
+          );
+        })}
+      </div>
+
+      <div className="mt-8 flex flex-wrap items-center gap-12">
+        <div className="flex-[1_1_300px]" aria-live="polite">
+          <div className="text-[28px] font-bold tracking-[-0.015em]">{tradeSteps[step].title}</div>
+          <p className="mt-2.5 text-[19px] leading-[1.47] text-apple-secondary">{tradeSteps[step].body}</p>
+          <button
+            type="button"
+            onClick={() => {
+              if (step === 3) setVouched(false);
+              setStep((step + 1) % 4);
+            }}
+            className="mt-[22px] min-h-11 rounded-full px-5 text-[15px] text-white"
+            style={{ background: BLUE }}
+          >
+            {step === 3 ? "Start over" : "Next step →"}
+          </button>
+        </div>
+
+        <div id="trade-panel" role="tabpanel" className="min-h-[380px] flex-[2_1_520px] overflow-hidden rounded-2xl border border-[#e4e4e4] bg-[#fdfdfd] text-[#0d0d0d]">
+          {step === 0 && (
+            <div className="p-[22px]">
+              <div className="rounded-[10px] border border-[#e4e4e4] bg-white px-3 py-2.5 text-sm text-[#747474]">Search items, pets, units…</div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {["All", "Murder Mystery 2", "Grow a Garden"].map((g) => {
+                  const on = g === game;
+                  return (
+                    <button
+                      key={g}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => setGame(g)}
+                      className={`rounded-full border px-3 py-1.5 text-xs ${on ? "text-white" : "border-[#e4e4e4] bg-white"}`}
+                      style={on ? { background: BLUE, borderColor: BLUE } : undefined}
+                    >
+                      {g}
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                {results.map((r) => (
+                  <div key={r.title} className="rounded-[10px] border border-[#e4e4e4] bg-white p-2.5">
+                    <div className={`h-[70px] rounded-md bg-gradient-to-br ${r.bg}`} />
+                    <div className="mt-2 truncate text-[13px] font-bold">{r.title}</div>
+                    <div className="text-xs text-[#747474]">{r.game} · {r.seller}</div>
+                    <div className="mt-1.5 flex items-center justify-between">
+                      <span className="font-extrabold" style={{ color: BLUE }}>₱{r.price}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPicked(r.i);
+                          setVouched(false);
+                          setStep(1);
+                        }}
+                        className="rounded-lg px-2.5 py-1.5 text-xs text-white"
+                        style={{ background: BLUE }}
+                      >
+                        Message
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {step === 1 && (
+            <div className="flex min-h-[380px] flex-col">
+              <div className="flex items-center gap-2.5 border-b border-[#e4e4e4] px-[18px] py-3.5">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e4e4e4] text-xs font-bold">{item.seller.slice(0, 2).toUpperCase()}</span>
+                <div>
+                  <div className="text-sm font-bold">{item.seller}</div>
+                  <div className="text-xs text-[#747474]">{item.title}</div>
+                </div>
+              </div>
+              <div className="flex flex-1 flex-col gap-2.5 p-[18px] text-sm">
+                <div className="max-w-[70%] self-end rounded-[14px_14px_4px_14px] px-3 py-2 text-[#f8f8f8]" style={{ background: BLUE }}>Hi! Is this still available?</div>
+                <div className="max-w-[70%] self-start rounded-[14px_14px_14px_4px] bg-[#f0f0f2] px-3 py-2">Yes. GCash or Robux works for me.</div>
+                <div className="max-w-[70%] self-end rounded-[14px_14px_4px_14px] px-3 py-2 text-[#f8f8f8]" style={{ background: BLUE }}>GCash. Sending now.</div>
+              </div>
+              <div className="border-t border-[#e4e4e4] px-[18px] py-3 text-[13px] text-[#747474]">Usernames only. No real names are shown.</div>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="p-[26px]">
+              <div className="text-[15px] font-bold">How do you want to pay?</div>
+              <div role="radiogroup" aria-label="Payment method" className="mt-3.5 grid grid-cols-2 gap-2.5">
+                {[
+                  ["GCash", "E-wallet"],
+                  ["PayPal", "Online payment"],
+                  ["Robux", "In-game currency"],
+                  ["Cross-trade", "Swap items"],
+                ].map(([name, sub]) => {
+                  const on = name === payment;
+                  return (
+                    <button
+                      key={name}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      onClick={() => setPayment(name)}
+                      className="rounded-[10px] bg-white p-3.5 text-left text-sm"
+                      style={{ border: on ? `2px solid ${BLUE}` : "1px solid #e4e4e4", margin: on ? 0 : 1 }}
+                    >
+                      <span className="block font-bold">{name}</span>
+                      <span className="mt-0.5 block text-xs text-[#747474]">{sub}</span>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="mt-[18px] text-[13px] text-[#747474]">Buyer and seller agree on terms themselves. RBMarket charges no fees.</div>
+            </div>
+          )}
+
+          {step === 3 && (
+            <div className="flex flex-col items-center p-8 text-center">
+              <span className="flex h-[72px] w-[72px] items-center justify-center rounded-full bg-[#e4e4e4] text-2xl font-extrabold">{item.seller.slice(0, 2).toUpperCase()}</span>
+              <div className="mt-3 text-xl font-extrabold">{item.seller}</div>
+              <div className="text-[13px] text-[#747474]">Joined Dec 2025</div>
+              <div className="mt-[18px] text-[44px] font-extrabold" style={{ color: GREEN }} aria-live="polite">
+                {item.vouches + (vouched ? 1 : 0)}
+              </div>
+              <div className="text-[13px] text-[#747474]">vouches</div>
+              <button
+                type="button"
+                onClick={() => setVouched((v) => !v)}
+                className="mt-[18px] min-h-11 rounded-[10px] px-[18px] text-sm font-semibold text-white"
+                style={{ background: vouched ? GREEN : BLUE }}
+              >
+                {vouched ? "Vouched ✓" : `Vouch for ${item.seller}`}
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
   );
 };
 
-const RBMarket = () => {
-  return (
-    <PageTransition>
-      <div className="min-h-screen bg-rbmarket-gradient">
-        <Navbar />
+const RBMarket = () => (
+  <PageTransition>
+    <div className="min-h-screen bg-white text-apple-ink">
+      <GlobalNav />
+      <LocalNav
+        name={app.name}
+        homeHref="/rbmarket"
+        icon={<AppIcon app={app} size={28} />}
+        links={[
+          { label: "A trade", href: "#trade" },
+          { label: "Trending", href: "#trending" },
+          { label: "Trust", href: "#trust" },
+        ]}
+        cta={{ label: "Open ↗", href: SITE_URL, color: BLUE }}
+      />
 
-        {/* Hero — Action-Oriented */}
-        <section className="pt-16 min-h-screen flex items-center relative overflow-hidden">
-          {/* Animated gradient orbs */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <div className="absolute w-96 h-96 rounded-full blur-3xl opacity-20 animate-pulse-glow" style={{ background: "hsl(var(--rbmarket-accent))", top: "10%", right: "10%" }} />
-            <div className="absolute w-72 h-72 rounded-full blur-3xl opacity-10 animate-pulse-glow" style={{ background: "hsl(var(--rbmarket-blue))", bottom: "20%", left: "5%", animationDelay: "1s" }} />
-          </div>
+      <section className="overflow-hidden bg-apple-gray px-[22px] pt-24 text-center">
+        <p className="text-[21px] font-semibold" style={{ color: BLUE }}>RBMarket · Web app · Live at rbmarket.app</p>
+        <h1 className="mx-auto mt-2.5 max-w-[960px] text-[clamp(44px,7.5vw,92px)] font-bold leading-[1.02] tracking-[-0.035em]">
+          A marketplace for Roblox items.
+        </h1>
+        <p className="mx-auto mt-[22px] max-w-[640px] text-[21px] leading-[1.4] text-apple-secondary">
+          Players buy and sell pets, items and units for cash. There are no hidden fees, trades stay anonymous, and trust comes from
+          community vouches.
+        </p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-7">
+          <PillLink href={SITE_URL} background={BLUE} external>
+            Visit rbmarket.app ↗
+          </PillLink>
+          <a href="#trade" className="text-[17px] text-apple-link hover:underline">
+            Follow a trade ›
+          </a>
+        </div>
+        <SiteReplica />
+      </section>
 
-          <div className="container mx-auto px-6 py-24 text-center relative">
-            <ScrollReveal>
-              <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full" style={{ background: "hsl(var(--rbmarket-accent) / 0.1)", border: "1px solid hsl(var(--rbmarket-accent) / 0.2)" }}>
-                <span className="w-2 h-2 rounded-full animate-pulse" style={{ background: "hsl(var(--rbmarket-accent))" }} />
-                <span className="text-sm font-medium" style={{ color: "hsl(var(--rbmarket-accent))" }}>Live Now</span>
-              </div>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-lume-foreground mb-6 leading-tight">
-                The Marketplace,<br />
-                <span className="text-gradient-rbmarket">Democratized.</span>
-                <br />
-                <span className="text-2xl md:text-3xl font-light" style={{ color: "hsl(var(--lume-foreground) / 0.6)" }}>Live right now.</span>
-              </h1>
-              <p className="text-lume-foreground/60 text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-                Peer-to-peer Roblox item trading with zero admin fees. Secure vouching, transparent reputation, and real-time negotiations.
-              </p>
-            </ScrollReveal>
+      <TradeFlow />
 
-            <ScrollReveal delay={200}>
-              <MagneticButton as="div" className="inline-block">
-                <a
-                  href="https://rbmarket.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 font-bold text-xl px-10 py-5 rounded-full transition-all hover:scale-105"
-                  style={{
-                    background: "linear-gradient(135deg, hsl(var(--rbmarket-accent)), hsl(var(--rbmarket-blue)))",
-                    color: "hsl(220 20% 7%)",
-                    boxShadow: "0 0 30px hsl(var(--rbmarket-accent) / 0.4), 0 0 60px hsl(var(--rbmarket-accent) / 0.2)",
-                  }}
-                >
-                  Go to RBMarket.app <ArrowRight className="w-6 h-6" />
-                </a>
-              </MagneticButton>
-            </ScrollReveal>
-
-            <ScrollReveal delay={400}>
-              <div className="max-w-4xl mx-auto mt-16 relative">
-                {/* Laptop mockup with animated screen */}
-                <div className="relative rounded-xl overflow-hidden" style={{ boxShadow: "0 0 60px -15px hsl(var(--rbmarket-accent) / 0.3)" }}>
-                  <img src={heroLaptop} alt="RBMarket live dashboard" className="w-full" width={1280} height={800} />
-                  {/* Animated overlay suggesting activity */}
-                  <div className="absolute inset-0 pointer-events-none">
-                    <div className="absolute top-0 left-0 right-0 h-full opacity-20" style={{ background: "linear-gradient(180deg, transparent 0%, hsl(var(--rbmarket-accent) / 0.1) 50%, transparent 100%)", animation: "scanDown 3s ease-in-out infinite" }} />
-                  </div>
+      <section id="trending" className="scroll-mt-14 bg-apple-gray px-[22px] py-[140px]">
+        <div className="mx-auto max-w-[980px]">
+          <p className="text-[17px] font-semibold" style={{ color: BLUE }}>02 · Trending games</p>
+          <h2 className="mt-2 text-[clamp(36px,5vw,52px)] font-bold leading-[1.07] tracking-[-0.025em]">What people are trading.</h2>
+          <p className="mt-3 text-[19px] text-apple-secondary">Active listings by game, from the live site.</p>
+          <div className="mt-10 flex flex-col gap-3.5">
+            {trends.map(([name, count]) => (
+              <div key={name} className="grid grid-cols-[minmax(110px,180px)_1fr_40px] items-center gap-4">
+                <div className="text-[15px] font-semibold sm:text-[17px]">{name}</div>
+                <div className="h-7 overflow-hidden rounded-lg bg-apple-fill">
+                  <div className="h-full rounded-lg" style={{ width: `${(count / 11) * 100}%`, background: BLUE }} />
                 </div>
+                <div className="text-right text-[17px] font-semibold">{count}</div>
               </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* Social Proof & Active Stats */}
-        <section className="py-24">
-          <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground text-center mb-4">Trusted by the Community</h2>
-              <p className="text-lume-foreground/50 text-center mb-16 max-w-lg mx-auto">
-                Real numbers. Real trades. Real trust.
-              </p>
-            </ScrollReveal>
-
-            {/* Stats */}
-            <div className="grid md:grid-cols-3 gap-8 max-w-3xl mx-auto mb-20">
-              {[
-                { value: 500, suffix: "+", label: "Active Trades", icon: TrendingUp },
-                { value: 1200, suffix: "+", label: "Verified Vouches", icon: Shield },
-                { value: 0, suffix: "", label: "Admin Fees", icon: Users, displayText: "Zero" },
-              ].map((stat, i) => (
-                <ScrollReveal key={stat.label} delay={i * 150}>
-                  <div className="text-center p-8 rounded-2xl border" style={{ background: "hsl(var(--rbmarket-surface))", borderColor: "hsl(var(--rbmarket-accent) / 0.1)" }}>
-                    <stat.icon className="w-8 h-8 mx-auto mb-4 text-rbmarket-accent" />
-                    <div className="text-4xl md:text-5xl font-bold mb-2 text-gradient-rbmarket">
-                      {stat.displayText || <CountUpNumber target={stat.value} suffix={stat.suffix} />}
-                    </div>
-                    <p className="text-sm" style={{ color: "hsl(var(--lume-foreground) / 0.5)" }}>{stat.label}</p>
-                  </div>
-                </ScrollReveal>
-              ))}
-            </div>
-
-            {/* Floating vouch reviews */}
-            <ScrollReveal>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                <FloatingVouch name="@TraderX" text="Smoothest trade I've ever done. Instant and secure." delay={0} />
-                <FloatingVouch name="@RobloxKing" text="Love the vouch system — no more scammers!" delay={200} />
-                <FloatingVouch name="@LimitedCollector" text="Finally a marketplace that puts traders first." delay={400} />
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
-        {/* Features */}
-        <section id="features" className="py-24">
-          <div className="container mx-auto px-6">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground text-center mb-4">How It Works</h2>
-              <p className="text-lume-foreground/50 text-center mb-20 max-w-lg mx-auto">
-                Trade safely, transparently, and without middlemen.
-              </p>
-            </ScrollReveal>
-
-            <div className="space-y-32 max-w-5xl mx-auto">
-              {/* P2P */}
-              <ScrollReveal>
-                <div className="flex flex-col lg:flex-row-reverse gap-12 lg:gap-20 items-center">
-                  <div className="flex-1">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: "hsl(var(--rbmarket-accent) / 0.1)" }}>
-                      <Users className="w-5 h-5 text-rbmarket-accent" />
-                    </div>
-                    <p className="text-rbmarket-accent text-xs font-semibold tracking-widest uppercase mb-2">Peer-to-Peer</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-lume-foreground mb-4">Direct Trading Freedom</h3>
-                    <p className="text-lume-foreground/60 leading-relaxed">
-                      Negotiate directly with buyers and sellers. Real-time chat, no admin bottlenecks, no hidden fees. Just clean, fast transactions.
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="rounded-2xl overflow-hidden glow-rbmarket">
-                      <img src={chatImg} alt="P2P chat interface" className="w-full" loading="lazy" width={800} height={800} />
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-
-              {/* Public Profile — Glassmorphism */}
-              <ScrollReveal>
-                <div className="flex flex-col lg:flex-row gap-12 lg:gap-20 items-center">
-                  <div className="flex-1">
-                    <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: "hsl(var(--rbmarket-accent) / 0.1)" }}>
-                      <Shield className="w-5 h-5 text-rbmarket-accent" />
-                    </div>
-                    <p className="text-rbmarket-accent text-xs font-semibold tracking-widest uppercase mb-2">Trust & Transparency</p>
-                    <h3 className="text-2xl md:text-3xl font-bold text-lume-foreground mb-4">Public Profiles. No Hiding.</h3>
-                    <p className="text-lume-foreground/60 leading-relaxed">
-                      Every trader has a public profile with vouches, reports, and transaction history. Bad actors have nowhere to hide. Hover to see the spotlight effect.
-                    </p>
-                  </div>
-                  <div className="flex-1">
-                    <div className="rounded-2xl overflow-hidden relative group" style={{ boxShadow: "0 0 60px -15px hsl(var(--rbmarket-accent) / 0.3)" }}>
-                      <img src={profileImg} alt="User profile with vouches" className="w-full" loading="lazy" width={800} height={800} />
-                      {/* Glassmorphism overlay */}
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" style={{ background: "linear-gradient(135deg, hsl(var(--rbmarket-accent) / 0.05), hsl(var(--rbmarket-blue) / 0.1))", backdropFilter: "blur(2px)" }}>
-                        {/* Spotlight sweep */}
-                        <div className="absolute inset-0 overflow-hidden">
-                          <div className="absolute top-0 -left-full w-1/3 h-full" style={{ background: "linear-gradient(90deg, transparent, hsl(var(--rbmarket-accent) / 0.15), transparent)", animation: "spotlightSweep 2s ease-in-out infinite" }} />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </ScrollReveal>
-            </div>
-          </div>
-        </section>
-
-        {/* Fast Marquee */}
-        <section className="py-8 overflow-hidden border-y" style={{ borderColor: "hsl(var(--rbmarket-accent) / 0.1)" }}>
-          <div className="flex whitespace-nowrap" style={{ animation: "marquee 12s linear infinite" }}>
-            {[...Array(3)].map((_, i) => (
-              <span key={i} className="text-2xl md:text-3xl font-bold tracking-wider mx-8" style={{ color: "hsl(var(--rbmarket-accent) / 0.2)" }}>
-                BUY. SELL. VOUCH. REPEAT. • NO ADMIN INTERFERENCE • P2P FREEDOM •&nbsp;
-              </span>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Final Push CTA */}
-        <section className="py-24">
-          <div className="container mx-auto px-6 text-center">
-            <ScrollReveal>
-              <h2 className="text-3xl md:text-4xl font-bold text-lume-foreground mb-4">Ready to Trade?</h2>
-              <p className="text-lume-foreground/50 mb-10 max-w-md mx-auto">
-                Join the fairest marketplace in gaming. No fees. No middlemen. Just P2P freedom.
-              </p>
-              <MagneticButton as="div" className="inline-block">
-                <a
-                  href="https://rbmarket.app"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-3 font-bold text-xl px-10 py-5 rounded-full transition-all hover:scale-105"
-                  style={{
-                    background: "linear-gradient(135deg, hsl(var(--rbmarket-accent)), hsl(var(--rbmarket-blue)))",
-                    color: "hsl(220 20% 7%)",
-                    boxShadow: "0 0 30px hsl(var(--rbmarket-accent) / 0.4), 0 0 60px hsl(var(--rbmarket-accent) / 0.2)",
-                  }}
-                >
-                  Start Trading on RBMarket.app <ExternalLink className="w-5 h-5" />
-                </a>
-              </MagneticButton>
-            </ScrollReveal>
-          </div>
-        </section>
+      <section id="trust" className="mx-auto max-w-[980px] scroll-mt-14 px-[22px] py-[140px]">
+        <p className="text-[17px] font-semibold" style={{ color: BLUE }}>03 · The trust layer</p>
+        <h2 className="mt-2 text-[clamp(36px,5vw,52px)] font-bold leading-[1.07] tracking-[-0.025em]">Anonymous, but accountable.</h2>
+        <div className="mt-10 flex flex-col border-b border-apple-hairline">
+          {[
+            ["Anonymous profiles", "Traders see usernames, not identities, so you can trade with confidence and stay private."],
+            ["Community vouches", "Reputation comes from completed trades. Top Vouched Sellers are featured on the home page."],
+            ["Hall of Shame", "Reported scammers are listed publicly, so the whole community knows who to avoid."],
+          ].map(([title, body]) => (
+            <div key={title} className="flex flex-wrap gap-6 border-t border-apple-hairline py-[26px]">
+              <div className="flex-[0_0_240px] text-[21px] font-bold">{title}</div>
+              <div className="flex-[1_1_380px] text-[19px] leading-[1.47] text-apple-body">{body}</div>
+            </div>
+          ))}
+        </div>
+      </section>
 
-        {/* Footer */}
-        <footer className="border-t py-12" style={{ borderColor: "hsl(var(--rbmarket-accent) / 0.1)", background: "hsl(var(--rbmarket-bg))" }}>
-          <div className="container mx-auto px-6">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-              <div>
-                <h3 className="text-lg font-bold text-gradient-rbmarket mb-2">RBMarket</h3>
-                <p className="text-lume-foreground/30 text-xs">By Aimtera Labs</p>
-              </div>
-              <div className="flex flex-wrap gap-x-8 gap-y-3 text-sm">
-                <Link to="/privacy" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Privacy Policy</Link>
-                <Link to="/terms" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Terms of Service</Link>
-                <Link to="/account-deletion" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Account Deletion</Link>
-                <a href="mailto:support@aimteralabs.com" className="text-lume-foreground/50 hover:text-lume-foreground transition-colors">Support</a>
-              </div>
-            </div>
-            <div className="mt-8 pt-6" style={{ borderTop: "1px solid hsl(var(--rbmarket-accent) / 0.05)" }}>
-              <p className="text-lume-foreground/20 text-xs">
-                &copy; {new Date().getFullYear()} Aimtera Labs. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </footer>
+      <div className="bg-apple-gray">
+        <BehindTheBuild appName="RBMarket" stack="Next.js 14 · Prisma · Auth.js · Pusher · PayMongo · UploadThing · Tailwind CSS · Radix UI">
+          <p>
+            I built RBMarket solo in December 2025 as a full-stack marketplace for direct user-to-user negotiation. Messaging runs
+            in real time over Pusher, and subscriptions are paid through the PayMongo API. With SEO as the only growth channel, it
+            launched to <strong className="text-apple-ink">85 community members, 22 active listings and ₱7.3k in trade volume</strong>{" "}
+            from 13 active traders.
+          </p>
+        </BehindTheBuild>
       </div>
-    </PageTransition>
-  );
-};
+      <SiteFooter />
+    </div>
+  </PageTransition>
+);
 
 export default RBMarket;

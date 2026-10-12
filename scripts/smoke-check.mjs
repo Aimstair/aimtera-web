@@ -9,9 +9,16 @@ if (!baseUrl) {
 
 const routeChecks = [
   "/",
-  "/lume",
   "/symmetryai",
+  // Policy URLs linked from Google Play listings. These must always resolve.
+  "/privacy",
+  "/terms",
   "/account-deletion",
+  "/speedmath/privacy",
+  "/test4test/privacy",
+  "/test4test/account-deletion",
+  "/clipit/privacy",
+  "/clipit/terms",
 ];
 
 const failures = [];
@@ -53,7 +60,7 @@ if (functionsUrl && anonKey) {
         apikey: anonKey,
         Authorization: `Bearer ${anonKey}`,
       },
-      body: JSON.stringify({ product: "lume" }),
+      body: JSON.stringify({ product: "symmetryai" }),
     });
 
     if (!response.ok) {
