@@ -10,7 +10,7 @@ import { experience, profile, toolbox, workStages } from "@/content/profile";
 import clipItVault from "@/assets/apps/clipit-04.png";
 import speedMathHome from "@/assets/apps/speedmath-01.png";
 import speedSpellRound from "@/assets/apps/speedspell-02.png";
-import test4TestProof from "@/assets/apps/test4test-03.png";
+import test4TestToday from "@/assets/apps/test4test-today.webp";
 import symmetryPhone from "@/assets/symmetry-hero-phone.png";
 import maisonCarteHero from "@/assets/apps/maisoncarte-hero.jpg";
 
@@ -380,7 +380,11 @@ const Apps = () => {
             dark
             linkColor="#a5b4fc"
             exploreLabel="See the loop"
-            media={<img src={test4TestProof} alt="Test4Test daily proof screenshot" className="h-[300px] w-full object-cover object-[center_70%]" />}
+            media={
+              <div className="flex h-[300px] justify-center overflow-hidden px-7 sm:px-10">
+                <img src={test4TestToday} alt="Test4Test Today screen with a 14-day testing contract" className="h-full w-[420px] max-w-full rounded-t-[18px] object-cover object-[center_42%]" />
+              </div>
+            }
           />
           <AppTile
             app={getApp("symmetryai")}

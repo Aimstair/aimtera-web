@@ -6,10 +6,11 @@ import AppIcon from "@/components/site/AppIcon";
 import PageTransition from "@/components/PageTransition";
 import { BehindTheBuild, PillLink, StoreGallery } from "@/components/site/Section";
 import { getApp } from "@/content/apps";
-import promoTesters from "@/assets/apps/test4test-02.png";
-import promoProof from "@/assets/apps/test4test-03.png";
-import promoFeedback from "@/assets/apps/test4test-04.png";
-import promoKarma from "@/assets/apps/test4test-05.png";
+import shotToday from "@/assets/apps/test4test-today.webp";
+import shotCatalog from "@/assets/apps/test4test-catalog.webp";
+import shotBuild from "@/assets/apps/test4test-build.webp";
+import shotVerify from "@/assets/apps/test4test-verify.webp";
+import shotListing from "@/assets/apps/test4test-listing.webp";
 
 const app = getApp("test4test");
 const VIOLET = "#5b3fd6";
@@ -295,12 +296,14 @@ const Test4Test = () => (
       <StoreGallery
         className="bg-[#14112e]"
         dark
-        height={400}
+        title="Inside the app."
+        height={480}
         images={[
-          { src: promoTesters, alt: "20+ testers in 24 hours" },
-          { src: promoProof, alt: "Daily proof and active testers" },
-          { src: promoFeedback, alt: "Real feedback and reviews" },
-          { src: promoKarma, alt: "Earn Karma and Tokens" },
+          { src: shotToday, alt: "Today tab: UTC reset countdown and a 14-day testing contract" },
+          { src: shotCatalog, alt: "Catalog tab: boosted apps with Token and Karma rewards" },
+          { src: shotBuild, alt: "Build tab: your listed apps with locked testers and churn" },
+          { src: shotVerify, alt: "Verify tab: reviewing a tester's daily proof screenshot" },
+          { src: shotListing, alt: "App listing: tester capacity, requirements and feedback" },
         ]}
       />
       <BehindTheBuild appName="Test4Test" stack="React Native · Expo Router · Supabase · TanStack Query · Google Sign-In · RevenueCat">
