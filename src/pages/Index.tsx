@@ -13,6 +13,7 @@ import speedSpellRound from "@/assets/apps/speedspell-02.png";
 import test4TestToday from "@/assets/apps/test4test-today.webp";
 import symmetryPhone from "@/assets/symmetry-hero-phone.png";
 import maisonCarteHero from "@/assets/apps/maisoncarte-hero.jpg";
+import portrait from "@/assets/portrait.webp";
 
 /* Icon positions around the portrait, in px within a 380px square. */
 const orbitPositions: Record<string, { x: number; y: number }> = {
@@ -63,9 +64,11 @@ const Hero = () => {
         <div className="h-[380px] w-[380px] max-[420px]:h-[304px] max-[420px]:w-[304px]">
         <div className="relative h-[380px] w-[380px] origin-top-left max-[420px]:scale-[0.8]">
           <div aria-hidden="true" className="absolute inset-5 rounded-full border border-dashed border-apple-hairline" />
-          <div className="absolute left-[90px] top-[90px] flex h-[200px] w-[200px] items-center justify-center rounded-full bg-gradient-to-b from-apple-gray to-[#e8e8ed] text-[64px] font-bold tracking-[-0.03em] text-apple-tertiary">
-            EG
-          </div>
+          <img
+            src={portrait}
+            alt={profile.name}
+            className="absolute left-[90px] top-[90px] h-[200px] w-[200px] rounded-full bg-apple-gray object-cover"
+          />
           {orbitApps.map((app) => {
             const on = app.slug === selected;
             const pos = orbitPositions[app.slug];
